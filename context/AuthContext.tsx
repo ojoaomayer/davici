@@ -73,26 +73,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser)
-      if (currentUser) {
-        await syncUserProfile(currentUser)
-        // Listen to live updates on user profile (usage count, plan upgrades)
-        const userRef = doc(db, 'users', currentUser.uid)
-        const unsubsDoc = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            setUserData(docSnap.data() as UserProfile)
+    try {
+      const unsubscribe = onAuthStateChanged(
+        auth,
+        async (currentUser) => {
+          setUser(currentUser)
+          if (currentUser) {
+            await syncUserProfile(currentUser)
+            // Listen to live updates on user profile (usage count, plan upgrades)
+            const userRef = doc(db, 'users', currentUser.uid)
+            const unsubsDoc = onSnapshot(
+              userRef,
+              (docSnap) => {
+                if (docSnap.exists()) {
+                  setUserData(docSnap.data() as UserProfile)
+                }
+              },
+              (err) => {
+                console.warn('User profile snapshot error:', err)
+              }
+            )
+            setLoading(false)
+            return () => unsubsDoc()
+          } else {
+            setUserData(null)
+            setLoading(false)
           }
-        })
-        setLoading(false)
-        return () => unsubsDoc()
-      } else {
-        setUserData(null)
-        setLoading(false)
-      }
-    })
+        },
+        (err) => {
+          console.warn('onAuthStateChanged error:', err)
+          setLoading(false)
+        }
+      )
 
-    return () => unsubscribe()
+      return () => unsubscribe()
+    } catch (err) {
+      console.warn('Failed to initialize auth listener:', err)
+      setLoading(false)
+    }
   }, [])
 
   const signInWithGoogle = async () => {

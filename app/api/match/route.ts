@@ -1,59 +1,41 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/firebase-admin'
-import { FieldValue } from 'firebase-admin/firestore'
 import { openai } from '@/lib/openai'
+import { searchSinapiItem } from '@/lib/sinapi-search'
 
 // Next.js route segment config — allow up to 5 minutes for large spreadsheets
 export const maxDuration = 300
 
 async function processItem(item: any, filter_uf: string) {
-  const queryText = `${item.descricao} (${item.unidade || ''})`
+  // 1. Search SINAPI items (composições e insumos) using local database
+  const searchResult = searchSinapiItem(item, filter_uf, 5)
 
-  // 1. Generate embedding
-  let embedding: number[]
-  try {
-    const embedResponse = await openai.embeddings.create({
-      model: 'gemini-embedding-2',
-      input: queryText,
-      dimensions: 768,
-      encoding_format: 'float',
-    })
-    embedding = embedResponse.data[0].embedding
-  } catch (error: any) {
-    console.error('Embedding Error:', error)
-    return { original: item, error: 'Embedding generation failed: ' + error.message }
+  if (!searchResult.candidates || searchResult.candidates.length === 0) {
+    return {
+      original: item,
+      match: null,
+      candidates: [],
+      judgment: { status: 'baixo', match_score: 0, justificativa: 'Nenhuma correspondência encontrada no SINAPI.' },
+    }
   }
 
-  // 2. Search Firestore for top 5 candidates via vector search
-  let candidates: any[] = []
-  try {
-    const query = db.collection('sinapi_itens')
-      .where('uf', '==', filter_uf)
-      .findNearest('embedding', FieldValue.vector(embedding), {
-        limit: 5,
-        distanceMeasure: 'COSINE',
-      })
-
-    const snapshot = await query.get()
-    // Strip 'embedding': it's a Firestore VectorValue (class instance),
-    // not serializable by Next.js when passed to Client Components.
-    candidates = snapshot.docs.map(doc => {
-      const { embedding: _emb, ...rest } = doc.data() as any
-      return { id: doc.id, ...rest }
-    })
-  } catch (error: any) {
-    console.error('Firestore Vector Search Error:', error)
-    return { original: item, error: 'Database search failed: ' + error.message }
+  // If we already have a direct code match, return immediately
+  if (searchResult.match && searchResult.match.match_score === 100 && item.codigo_usuario) {
+    return {
+      original: item,
+      match: searchResult.match,
+      candidates: searchResult.candidates,
+      judgment: searchResult.judgment,
+      via: 'codigo_direto',
+    }
   }
 
-  if (!candidates || candidates.length === 0) {
-    return { original: item, match: null, candidates: [] }
-  }
+  const candidates = searchResult.candidates
+  let defaultMatch = searchResult.match
 
-  // 3. AI judgment to pick the best candidate
+  // 2. Try AI judgment if API key is present and candidates exist
   const prompt = `
 Você é um Engenheiro Civil orçamentista sênior especialista na base SINAPI.
-Seu objetivo é analisar um item da planilha do usuário e escolher a melhor correspondência (match) entre as 5 opções candidatas da base SINAPI fornecidas via busca vetorial.
+Seu objetivo é analisar um item da planilha do usuário e escolher a melhor correspondência (match) entre as 5 opções candidatas da base SINAPI fornecidas.
 
 CRITÉRIOS TÉCNICOS RÍGIDOS:
 - Avalie a similaridade de materiais, dimensões, produtividade e processo executivo.
@@ -66,7 +48,7 @@ Unidade: ${item.unidade || 'N/A'}
 Quantidade: ${item.quantidade}
 
 Candidatos SINAPI:
-${candidates.map((c: any, i: number) => `[Candidato ${i + 1}] Código: ${c.codigo} | Descrição: ${c.descricao} | Unidade: ${c.unidade}`).join('\n')}
+${candidates.map((c: any, i: number) => `[Candidato ${i + 1}] Código: ${c.codigo} | Descrição: ${c.descricao} | Unidade: ${c.unidade} | R$ ${c.custo_nao_desonerado}`).join('\n')}
 
 Retorne APENAS um JSON válido seguindo a exata estrutura abaixo, sem marcações markdown:
 {
@@ -77,7 +59,8 @@ Retorne APENAS um JSON válido seguindo a exata estrutura abaixo, sem marcaçõe
 }
 `
 
-  let judgment: any
+  let judgment: any = null
+
   try {
     const aiResponse = await openai.chat.completions.create({
       model: 'gemini-3.6-flash',
@@ -87,17 +70,42 @@ Retorne APENAS um JSON válido seguindo a exata estrutura abaixo, sem marcaçõe
     })
     judgment = JSON.parse(aiResponse.choices[0].message.content || '{}')
   } catch (error: any) {
-    console.error('AI Judgment Error:', error)
-    judgment = { status: 'baixo', match_score: 0, justificativa: 'Erro na análise da IA: ' + error.message }
+    console.warn(`AI Judgment unavailable (${error.status || error.message}), using best candidate ranking:`, error.message?.slice(0, 100))
   }
 
-  const selectedMatch = candidates.find((c: any) => c.codigo === judgment.matched_codigo)
+  // If AI selected a valid candidate, use it
+  if (judgment && judgment.matched_codigo) {
+    const aiSelected = candidates.find((c: any) => String(c.codigo) === String(judgment.matched_codigo))
+    if (aiSelected) {
+      return {
+        original: item,
+        match: {
+          ...aiSelected,
+          ...judgment,
+        },
+        candidates,
+        judgment,
+      }
+    }
+  }
+
+  // Fallback: If AI is in 429 quota limit or couldn't pick, use the top candidate with local justification
+  const fallbackMatch = defaultMatch || candidates[0]
+  const fallbackStatus = (defaultMatch as any)?.status || (fallbackMatch?.match_score >= 70 ? 'alto' : fallbackMatch?.match_score >= 45 ? 'medio' : 'baixo')
+  const fallbackJustificativa = (defaultMatch as any)?.justificativa || `Melhor correspondência técnica encontrada no banco SINAPI (${fallbackMatch?.match_score || 0}% similaridade).`
+
+  const fallbackJudgment = {
+    matched_codigo: fallbackMatch?.codigo,
+    match_score: fallbackMatch?.match_score || 70,
+    status: fallbackStatus,
+    justificativa: fallbackJustificativa,
+  }
 
   return {
     original: item,
-    match: selectedMatch ? { ...selectedMatch, ...judgment } : null,
+    match: fallbackMatch ? { ...fallbackMatch, ...fallbackJudgment } : null,
     candidates,
-    judgment,
+    judgment: fallbackJudgment,
   }
 }
 
@@ -109,7 +117,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid items array' }, { status: 400 })
     }
 
-    const BATCH_SIZE = 5  // process 5 items concurrently to balance speed vs. rate limits
+    const BATCH_SIZE = 10
     const results: any[] = []
 
     for (let i = 0; i < items.length; i += BATCH_SIZE) {

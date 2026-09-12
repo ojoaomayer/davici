@@ -1,42 +1,80 @@
 'use server'
 
-import { db } from '@/lib/firebase-admin';
+import { getSinapiDb, SinapiItem } from '@/lib/sinapi-search'
 
-// In-memory cache for the MVP to allow fast, full-text substring search
-// without needing a paid external search engine like Algolia.
-let cache: any[] | null = null;
-let lastCacheTime = 0;
+export interface SinapiSearchResult {
+  codigo: string
+  descricao: string
+  unidade: string
+  tipo: 'composicao' | 'insumo'
+  custo_desonerado: number
+  custo_nao_desonerado: number
+}
 
-export async function searchSinapi(query: string) {
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+}
+
+export async function searchSinapi(
+  query: string = '',
+  uf: string = 'PR',
+  tipo: 'todos' | 'composicao' | 'insumo' = 'todos',
+  limit: number = 50,
+  page: number = 1
+): Promise<{ items: SinapiSearchResult[]; total: number }> {
   try {
-    // Refresh cache if it's older than 1 hour or empty
-    if (!cache || Date.now() - lastCacheTime > 3600000) {
-      console.log('Fetching SINAPI items from Firestore for cache...');
-      const snapshot = await db.collection('sinapi_itens').get();
-      // Strip 'embedding' (Firestore VectorValue) — it's a class instance and
-      // cannot be serialized when passed from a Server Action to Client Components.
-      cache = snapshot.docs.map(doc => {
-        const { embedding, ...rest } = doc.data() as any
-        return rest
-      });
-      lastCacheTime = Date.now();
+    const db = getSinapiDb()
+    const upperUf = (uf || 'PR').toUpperCase()
+
+    let filtered = db
+
+    // Filter by type
+    if (tipo === 'composicao') {
+      filtered = filtered.filter(item => item.tipo === 'composicao')
+    } else if (tipo === 'insumo') {
+      filtered = filtered.filter(item => item.tipo === 'insumo')
     }
 
-    if (!query || query.trim() === '') {
-      return cache.slice(0, 50); // return first 50 items if no query
+    // Filter by text query if provided
+    if (query && query.trim() !== '') {
+      const cleanQuery = query.trim()
+      const isNumericCode = /^\d+$/.test(cleanQuery)
+
+      if (isNumericCode) {
+        // Direct or prefix code match
+        filtered = filtered.filter(item => String(item.codigo).startsWith(cleanQuery))
+      } else {
+        const normQuery = normalize(cleanQuery)
+        const tokens = normQuery.split(/\s+/).filter(t => t.length >= 2)
+
+        filtered = filtered.filter(item => {
+          const normDesc = normalize(item.descricao)
+          // All tokens must be present
+          return tokens.every(token => normDesc.includes(token))
+        })
+      }
     }
 
-    const lowerQuery = query.toLowerCase().trim();
-    
-    // Simple filter by code or description
-    const results = cache.filter(item => 
-      String(item.codigo).includes(lowerQuery) || 
-      item.descricao?.toLowerCase().includes(lowerQuery)
-    );
+    const total = filtered.length
+    const startIndex = (page - 1) * limit
+    const paginated = filtered.slice(startIndex, startIndex + limit)
 
-    return results.slice(0, 100); // limit to 100 results for performance
+    const items: SinapiSearchResult[] = paginated.map(item => ({
+      codigo: item.codigo,
+      descricao: item.descricao,
+      unidade: item.unidade,
+      tipo: item.tipo,
+      custo_desonerado: item.precos_desonerado[upperUf] || 0,
+      custo_nao_desonerado: item.precos_nao_desonerado[upperUf] || 0,
+    }))
+
+    return { items, total }
   } catch (error) {
-    console.error("Error searching SINAPI:", error);
-    return [];
+    console.error('Error searching SINAPI items:', error)
+    return { items: [], total: 0 }
   }
 }

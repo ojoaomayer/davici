@@ -69,6 +69,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (err) {
       console.error('Error syncing user profile in Firestore:', err)
+      // Fallback local profile in case Firestore write is restricted by security rules
+      setUserData((prev) => prev || {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        nome: extraName || firebaseUser.displayName || '',
+        plano: 'free',
+        planilhas_limite: 1,
+        planilhas_usadas: 0,
+      })
     }
   }
 

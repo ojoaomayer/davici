@@ -25,6 +25,41 @@ function LoginForm() {
     }
   }, [user, loading, router])
 
+  const getFriendlyErrorMessage = (err: any) => {
+    const code = err?.code || ''
+    const msg = err?.message || ''
+
+    if (code === 'auth/operation-not-allowed') {
+      return 'Provedor não ativado no Firebase Console (Acesse Authentication > Sign-in method e ative Email/Senha ou Google).'
+    }
+    if (code === 'auth/unauthorized-domain') {
+      return 'Domínio não autorizado no Firebase Console (Acesse Authentication > Settings > Authorized Domains e adicione seu domínio).'
+    }
+    if (code === 'auth/invalid-api-key' || code === 'auth/api-key-not-valid') {
+      return 'Chave de API do Firebase inválida ou não configurada nas variáveis de ambiente da Vercel.'
+    }
+    if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+      return 'E-mail ou senha incorretos.'
+    }
+    if (code === 'auth/email-already-in-use') {
+      return 'Este e-mail já está cadastrado. Alterne para a aba "Entrar".'
+    }
+    if (code === 'auth/invalid-email') {
+      return 'Endereço de e-mail inválido.'
+    }
+    if (code === 'auth/weak-password') {
+      return 'Senha muito fraca. Escolha uma senha com pelo menos 6 caracteres.'
+    }
+    if (code === 'auth/popup-blocked') {
+      return 'O navegador bloqueou a janela pop-up do Google. Permita pop-ups para este site.'
+    }
+    if (code === 'auth/network-request-failed') {
+      return 'Falha de conexão com os servidores do Firebase. Verifique sua internet.'
+    }
+
+    return msg ? `Erro (${code || 'auth'}): ${msg}` : 'Erro ao processar autenticação. Verifique suas credenciais.'
+  }
+
   const handleGoogleLogin = async () => {
     setErrorMsg('')
     setIsSubmitting(true)
@@ -32,9 +67,9 @@ function LoginForm() {
       await signInWithGoogle()
       router.push('/dashboard')
     } catch (err: any) {
-      console.error(err)
+      console.error('Google Auth Error:', err)
       if (err.code !== 'auth/popup-closed-by-user') {
-        setErrorMsg('Falha na autenticação Google. Tente novamente.')
+        setErrorMsg(getFriendlyErrorMessage(err))
       }
     } finally {
       setIsSubmitting(false)
@@ -59,16 +94,8 @@ function LoginForm() {
       }
       router.push('/dashboard')
     } catch (err: any) {
-      console.error(err)
-      let msg = 'Erro ao processar autenticação.'
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
-        msg = 'Credenciais incorretas.'
-      } else if (err.code === 'auth/email-already-in-use') {
-        msg = 'E-mail já registrado. Tente entrar.'
-      } else if (err.code === 'auth/invalid-email') {
-        msg = 'Endereço de e-mail inválido.'
-      }
-      setErrorMsg(msg)
+      console.error('Email Auth Error:', err)
+      setErrorMsg(getFriendlyErrorMessage(err))
     } finally {
       setIsSubmitting(false)
     }

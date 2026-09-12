@@ -66,10 +66,10 @@ export default function ConsultasPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
         {/* Header Bar */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-800 pb-5">
+        <div className="animate-fade-in flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-zinc-800 pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500 uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span>Base Oficial SINAPI 08/2026 • 15.420 Itens Indexados</span>
             </div>
             <h1 className="text-xl font-bold tracking-tight text-zinc-100">
@@ -82,12 +82,12 @@ export default function ConsultasPage() {
 
           {/* Quick UF Selector & Live Telemetry */}
           <div className="flex flex-wrap items-center gap-2.5 self-start md:self-auto">
-            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-md text-xs">
+            <div className="hover-lift flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-md text-xs transition-all">
               <span className="text-zinc-500 font-mono font-medium">Estado / UF:</span>
               <select
                 value={uf}
                 onChange={(e) => { setUf(e.target.value); setPage(1); }}
-                className="bg-zinc-950 text-zinc-100 font-mono font-bold text-xs p-1 rounded border border-zinc-700 cursor-pointer focus:outline-none"
+                className="bg-zinc-950 text-zinc-100 font-mono font-bold text-xs p-1 rounded border border-zinc-700 cursor-pointer focus:outline-none transition-colors"
               >
                 {UFS.map(u => (
                   <option key={u} value={u}>{u}</option>
@@ -98,7 +98,7 @@ export default function ConsultasPage() {
         </div>
 
         {/* Social Proof & Platform Telemetry Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-zinc-900/30 border border-zinc-800/80 rounded-lg p-3 text-xs font-mono">
+        <div className="animate-fade-in-up delay-100 hover-glow grid grid-cols-2 sm:grid-cols-4 gap-3 bg-zinc-900/30 border border-zinc-800/80 rounded-lg p-3 text-xs font-mono transition-all duration-300">
           <div className="flex items-center gap-2.5 p-2 rounded bg-zinc-950/60 border border-zinc-800/40">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <div>
@@ -167,7 +167,7 @@ export default function ConsultasPage() {
         </div>
 
         {/* Filter & Search Bar */}
-        <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-4 space-y-3">
+        <div className="animate-fade-in-up delay-200 bg-zinc-900/40 border border-zinc-800 rounded-lg p-4 space-y-3">
           {/* Search Input */}
           <form onSubmit={handleSearchSubmit} className="relative flex items-center">
             <Search className="absolute left-3.5 w-4 h-4 text-zinc-500" />

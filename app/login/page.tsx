@@ -102,8 +102,8 @@ function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto">
-      <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-6 sm:p-7 space-y-6">
+    <div className="animate-scale-in w-full max-w-sm mx-auto">
+      <div className="hover-glow bg-zinc-900/60 border border-zinc-800 rounded-lg p-6 sm:p-7 space-y-6 transition-all duration-300">
         {/* Header */}
         <div className="space-y-1 text-center">
           <div className="w-8 h-8 rounded bg-zinc-950 border border-zinc-800 mx-auto flex items-center justify-center text-zinc-300 mb-3">

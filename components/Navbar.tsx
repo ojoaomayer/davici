@@ -32,7 +32,7 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center gap-1 border-l border-zinc-800 pl-6">
             <Link
               href="/orcamento"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 active:scale-[0.98] ${
                 isActive('/orcamento')
                   ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/80'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
@@ -43,7 +43,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/ferramentas/calculadora-bdi"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 active:scale-[0.98] ${
                 isActive('/ferramentas/calculadora-bdi')
                   ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/80'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
@@ -54,7 +54,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/consultas"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 active:scale-[0.98] ${
                 isActive('/consultas')
                   ? 'bg-zinc-800 text-zinc-100 border border-zinc-700/80'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
@@ -65,7 +65,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/#precos"
-              className="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
+              className="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-all duration-200 active:scale-[0.98]"
             >
               Planos
             </Link>
@@ -78,7 +78,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 href="/dashboard"
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium border transition-colors ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium border transition-all duration-200 active:scale-[0.98] ${
                   isActive('/dashboard')
                     ? 'bg-zinc-800 border-zinc-700 text-zinc-100'
                     : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800'
@@ -95,7 +95,7 @@ export default function Navbar() {
               <button
                 onClick={() => logout()}
                 title="Encerrar sessão"
-                className="p-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700 transition-colors"
+                className="p-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700 transition-all duration-200 active:scale-[0.95]"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -104,13 +104,13 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900 rounded-md transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-zinc-300 hover:text-zinc-100 hover:bg-zinc-900 rounded-md transition-all duration-200 active:scale-[0.98]"
               >
                 Entrar
               </Link>
               <Link
                 href="/login?mode=signup"
-                className="px-3 py-1.5 text-xs font-semibold text-zinc-950 bg-zinc-100 hover:bg-white rounded-md border border-zinc-200 transition-colors"
+                className="px-3 py-1.5 text-xs font-semibold text-zinc-950 bg-zinc-100 hover:bg-white rounded-md border border-zinc-200 transition-all duration-200 hover-lift active:scale-[0.98] shadow-sm"
               >
                 Criar Conta
               </Link>

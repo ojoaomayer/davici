@@ -117,9 +117,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Header */}
-        <div className="border-b border-zinc-800 pb-5 space-y-1">
+        <div className="animate-fade-in border-b border-zinc-800 pb-5 space-y-1">
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span>MÓDULO TÉCNICO • ACÓRDÃO 2622/2013 - TCU PLENÁRIO</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
@@ -131,9 +131,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
         </div>
 
         {/* Workspace Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="animate-fade-in-up delay-100 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Controls Column */}
-          <div className="lg:col-span-7 bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-5">
+          <div className="hover-glow lg:col-span-7 bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-5 transition-all duration-300">
             <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 flex items-center justify-between">
               <span>1. Parâmetros da Fórmula</span>
               <span className="text-[10px] text-zinc-500 lowercase font-normal">faixas edificações</span>

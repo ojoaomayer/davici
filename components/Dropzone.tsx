@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import * as xlsx from 'xlsx'
-import { UploadCloud, FileSpreadsheet, Settings, Hash, Tag, Layers, RefreshCw, FileText } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Settings, Hash, Tag, Layers, RefreshCw, FileText, ShieldCheck, Database, Zap, CheckCircle2 } from 'lucide-react'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -185,38 +185,37 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
   const [desonerado, setDesonerado] = useState<boolean>(false)
 
   const loadSheet = (wb: xlsx.WorkBook, sheetName: string) => {
+    const ws = wb.Sheets[sheetName]
+    if (!ws) return
+
+    const { headerRowIndex, columns: cols, rows } = analyzeSheetData(ws)
+    setColumns(cols)
+    setFileData(rows)
+    setHeaderRow(headerRowIndex + 1)
     setSelectedSheet(sheetName)
-    const worksheet = wb.Sheets[sheetName]
-    if (!worksheet) return
 
-    const parsed = analyzeSheetData(worksheet)
-    setHeaderRow(parsed.headerRowIndex + 1)
-    setColumns(parsed.columns)
-    setFileData(parsed.rows)
-
-    const auto = autoSelectColumns(parsed.columns)
+    const auto = autoSelectColumns(cols)
     setDescCol(auto.desc)
-    setQtdCol(auto.qtd)
     setCodeCol(auto.code)
-    setUnidCol(auto.unid)
     setNameCol(auto.name)
+    setQtdCol(auto.qtd)
+    setUnidCol(auto.unid)
   }
 
   const handleFile = (file: File) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer)
-        const wb = xlsx.read(data, { type: 'array' })
+        const buffer = e.target?.result
+        const wb = xlsx.read(buffer, { type: 'array' })
         setWorkbook(wb)
         setSheetNames(wb.SheetNames)
 
-        const preferred = ['planilha sintetica', 'planilha sintética', 'orcamento', 'orçamento', 'planilha', 'servicos', 'serviços', 'itens']
         let targetSheet = wb.SheetNames[0]
-        for (const p of preferred) {
-          const match = wb.SheetNames.find(s => s.toLowerCase().includes(p))
-          if (match) {
-            targetSheet = match
+        for (const s of wb.SheetNames) {
+          const sLower = s.toLowerCase()
+          if (sLower.includes('orcamento') || sLower.includes('planilha') || sLower.includes('servico') || sLower.includes('itens')) {
+            targetSheet = s
             break
           }
         }
@@ -287,61 +286,89 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto space-y-6">
       {!fileData.length && !workbook ? (
-        <div
-          className={cn(
-            "relative flex flex-col items-center justify-center p-12 border border-dashed rounded-lg transition-colors bg-zinc-900/30",
-            dragActive ? "border-emerald-500 bg-emerald-950/10" : "border-zinc-800 hover:border-zinc-700"
-          )}
-          onDragEnter={onDrag}
-          onDragLeave={onDrag}
-          onDragOver={onDrag}
-          onDrop={onDrop}
-        >
-          <div className="w-10 h-10 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 mb-3">
-            <UploadCloud className="w-5 h-5 text-zinc-300" />
+        <div className="space-y-4">
+          <div
+            className={cn(
+              "relative flex flex-col items-center justify-center p-12 sm:p-16 rounded-2xl transition-all duration-300 glass-panel blueprint-box overflow-hidden",
+              dragActive
+                ? "border-blue-500 bg-blue-950/20 shadow-[0_0_30px_rgba(59,130,246,0.25)]"
+                : "hover:border-white/20 hover:bg-slate-900/50"
+            )}
+            onDragEnter={onDrag}
+            onDragLeave={onDrag}
+            onDragOver={onDrag}
+            onDrop={onDrop}
+          >
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-radial-subtle pointer-events-none opacity-40" />
+
+            <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-b from-blue-500/20 to-blue-950/40 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-4 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+              <UploadCloud className="w-7 h-7 text-blue-400" />
+            </div>
+
+            <h3 className="text-base font-semibold text-white tracking-tight">Importar Planilha de Orçamento</h3>
+            <p className="text-xs text-slate-400 mt-1 mb-6 text-center max-w-md">
+              Arraste seu arquivo ou selecione do computador. Compatível com formatos <span className="text-slate-300 font-mono">.xlsx, .xlsm, .xls</span> e <span className="text-slate-300 font-mono">.csv</span>.
+            </p>
+
+            <label className="cursor-pointer btn-primary px-6 py-2.5 text-xs font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-slate-950" />
+              <span>Selecionar Arquivo</span>
+              <input 
+                type="file" 
+                className="hidden" 
+                accept=".xlsx,.xls,.xlsm,.csv,.ods" 
+                onChange={(e) => e.target.files && handleFile(e.target.files[0])}
+              />
+            </label>
           </div>
-          <h3 className="text-sm font-semibold text-zinc-200">Importar Planilha de Orçamento</h3>
-          <p className="text-xs text-zinc-500 mt-1 mb-4">Formatos suportados: .xlsx, .xlsm (com macros), .xls e .csv</p>
-          <label className="cursor-pointer bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold px-4 py-2 rounded-md border border-zinc-300 transition-colors shadow-sm">
-            Selecionar Arquivo
-            <input 
-              type="file" 
-              className="hidden" 
-              accept=".xlsx,.xls,.xlsm,.csv,.ods" 
-              onChange={(e) => e.target.files && handleFile(e.target.files[0])}
-            />
-          </label>
+
+          {/* Micro-indicators */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-[11px] text-slate-400">
+            <div className="glass-card p-3 rounded-lg flex items-center gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
+              <span>Base SINAPI Sincronizada</span>
+            </div>
+            <div className="glass-card p-3 rounded-lg flex items-center gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 neon-dot-emerald" />
+              <span>Processamento Vetorial Local</span>
+            </div>
+            <div className="glass-card p-3 rounded-lg flex items-center gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 neon-dot-blue" />
+              <span>Proteção e Sigilo de Dados</span>
+            </div>
+          </div>
         </div>
       ) : (
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6 space-y-6">
+        <div className="glass-panel rounded-2xl p-6 sm:p-7 space-y-6 blueprint-box">
           {/* Header Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-zinc-800 pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300">
-                <FileText className="w-4 h-4 text-emerald-400" />
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.08] pb-5">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                <FileText className="w-5 h-5 text-blue-400" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-zinc-100">Configuração de Importação</h2>
-                <div className="text-xs text-zinc-500 font-mono mt-0.5">
-                  {fileData.length} registros detectados • Linha {headerRow} identificada como cabeçalho
+                <h2 className="text-sm font-bold text-white tracking-tight">Mapeamento de Planilha</h2>
+                <div className="text-xs text-slate-400 font-mono mt-0.5">
+                  {fileData.length} linhas detectadas • Linha {headerRow} como cabeçalho
                 </div>
               </div>
             </div>
 
             {/* Sheet Selector */}
             {sheetNames.length > 1 && (
-              <div className="flex items-center gap-2 bg-zinc-950 border border-zinc-800 px-2.5 py-1 rounded-md">
-                <Layers className="w-3.5 h-3.5 text-zinc-400" />
-                <span className="text-[11px] font-medium text-zinc-400">Aba:</span>
+              <div className="flex items-center gap-2 glass-pill px-3 py-1.5 rounded-full">
+                <Layers className="w-3.5 h-3.5 text-blue-400" />
+                <span className="text-[11px] font-medium text-slate-400">Aba:</span>
                 <select
                   value={selectedSheet}
                   onChange={e => handleSheetChange(e.target.value)}
-                  className="bg-transparent text-zinc-200 font-mono text-xs focus:outline-none cursor-pointer"
+                  className="bg-transparent text-white font-mono text-xs focus:outline-none cursor-pointer"
                 >
                   {sheetNames.map(s => (
-                    <option key={s} value={s} className="bg-zinc-900 text-zinc-200">{s}</option>
+                    <option key={s} value={s} className="bg-[#0b132b] text-white">{s}</option>
                   ))}
                 </select>
               </div>
@@ -350,33 +377,34 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
 
           {/* Mapping Grid */}
           <div className="space-y-4">
-            <div className="text-[11px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
-              Mapeamento de Colunas
+            <div className="text-[11px] font-mono uppercase tracking-wider text-blue-400 font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
+              <span>Correspondência de Colunas</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5 bg-zinc-950/60 p-3 rounded-md border border-zinc-800/80">
+              <div className="space-y-2 bg-[#0b132b]/40 p-4 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-zinc-200">Descrição do Serviço / Insumo *</label>
-                  <span className="text-[10px] text-emerald-400 font-mono">Obrigatório</span>
+                  <label className="text-xs font-medium text-slate-200">Descrição do Serviço / Insumo *</label>
+                  <span className="text-[10px] text-blue-400 font-mono bg-blue-500/10 px-1.5 py-0.2 rounded border border-blue-500/20">Obrigatório</span>
                 </div>
                 <select 
                   value={descCol} onChange={e => setDescCol(e.target.value)}
-                  className="w-full p-2 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 text-xs font-mono focus:border-zinc-700 outline-none"
+                  className="w-full p-2.5 rounded-lg border border-white/10 bg-[#030712]/80 text-white text-xs font-mono focus:border-blue-500/50 outline-none transition-colors"
                 >
                   <option value="">Selecione a coluna...</option>
                   {columns.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
-              <div className="space-y-1.5 bg-zinc-950/60 p-3 rounded-md border border-zinc-800/80">
+              <div className="space-y-2 bg-[#0b132b]/40 p-4 rounded-xl border border-white/[0.06]">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-zinc-200">Quantidade</label>
-                  <span className="text-[10px] text-zinc-500 font-mono">Padrão: 1</span>
+                  <label className="text-xs font-medium text-slate-200">Quantidade</label>
+                  <span className="text-[10px] text-slate-400 font-mono">Padrão: 1</span>
                 </div>
                 <select 
                   value={qtdCol} onChange={e => setQtdCol(e.target.value)}
-                  className="w-full p-2 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 text-xs font-mono focus:border-zinc-700 outline-none"
+                  className="w-full p-2.5 rounded-lg border border-white/10 bg-[#030712]/80 text-white text-xs font-mono focus:border-blue-500/50 outline-none transition-colors"
                 >
                   <option value="">Não especificada (assume 1)</option>
                   {columns.map(c => <option key={c} value={c}>{c}</option>)}
@@ -385,37 +413,39 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-1.5 bg-zinc-950/60 p-3 rounded-md border border-zinc-800/80">
-                <label className="text-xs font-medium text-zinc-300 flex items-center gap-1">
-                  <Hash className="w-3 h-3 text-zinc-400" /> Código SINAPI (Opcional)
+              <div className="space-y-2 bg-[#0b132b]/40 p-4 rounded-xl border border-white/[0.06]">
+                <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                  <Hash className="w-3.5 h-3.5 text-blue-400" /> Código SINAPI (Opcional)
                 </label>
                 <select 
                   value={codeCol} onChange={e => setCodeCol(e.target.value)}
-                  className="w-full p-2 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 text-xs font-mono focus:border-zinc-700 outline-none"
+                  className="w-full p-2.5 rounded-lg border border-white/10 bg-[#030712]/80 text-white text-xs font-mono focus:border-blue-500/50 outline-none transition-colors"
                 >
                   <option value="">Não usar</option>
                   {columns.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
-              <div className="space-y-1.5 bg-zinc-950/60 p-3 rounded-md border border-zinc-800/80">
-                <label className="text-xs font-medium text-zinc-300 flex items-center gap-1">
-                  <Tag className="w-3 h-3 text-zinc-400" /> Nome do Item (Opcional)
+              <div className="space-y-2 bg-[#0b132b]/40 p-4 rounded-xl border border-white/[0.06]">
+                <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-cyan-400" /> Nome do Item (Opcional)
                 </label>
                 <select 
                   value={nameCol} onChange={e => setNameCol(e.target.value)}
-                  className="w-full p-2 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 text-xs font-mono focus:border-zinc-700 outline-none"
+                  className="w-full p-2.5 rounded-lg border border-white/10 bg-[#030712]/80 text-white text-xs font-mono focus:border-blue-500/50 outline-none transition-colors"
                 >
                   <option value="">Não usar</option>
                   {columns.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
-              <div className="space-y-1.5 bg-zinc-950/60 p-3 rounded-md border border-zinc-800/80">
-                <label className="text-xs font-medium text-zinc-300">Unidade (Opcional)</label>
+              <div className="space-y-2 bg-[#0b132b]/40 p-4 rounded-xl border border-white/[0.06]">
+                <label className="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                  <Layers className="w-3.5 h-3.5 text-emerald-400" /> Unidade (Opcional)
+                </label>
                 <select 
                   value={unidCol} onChange={e => setUnidCol(e.target.value)}
-                  className="w-full p-2 rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 text-xs font-mono focus:border-zinc-700 outline-none"
+                  className="w-full p-2.5 rounded-lg border border-white/10 bg-[#030712]/80 text-white text-xs font-mono focus:border-blue-500/50 outline-none transition-colors"
                 >
                   <option value="">Não usar</option>
                   {columns.map(c => <option key={c} value={c}>{c}</option>)}
@@ -425,18 +455,18 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
           </div>
 
           {/* Regional Settings Bar */}
-          <div className="bg-zinc-950 border border-zinc-800 p-3.5 rounded-md flex flex-wrap gap-4 items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-zinc-400 font-medium">
-              <Settings className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Parâmetros de Consulta SINAPI:</span>
+          <div className="bg-[#0b132b]/50 border border-white/[0.08] p-4 rounded-xl flex flex-wrap gap-4 items-center justify-between text-xs">
+            <div className="flex items-center gap-2 text-slate-300 font-medium">
+              <Settings className="w-4 h-4 text-blue-400" />
+              <span>Parâmetros Regionais SINAPI:</span>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <span className="text-zinc-500 font-mono">UF:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400 font-mono">Estado:</span>
                 <select 
                   value={uf} onChange={e => setUf(e.target.value)}
-                  className="p-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-200 font-mono font-bold text-xs"
+                  className="p-1.5 rounded-lg bg-[#030712] border border-white/15 text-white font-mono font-bold text-xs focus:outline-none"
                 >
                   <option value="PR">PR</option>
                   <option value="SP">SP</option>
@@ -452,12 +482,12 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
                 </select>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                <span className="text-zinc-500 font-mono">Regime:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-400 font-mono">Regime:</span>
                 <select 
                   value={desonerado ? 'deson' : 'nao_deson'} 
                   onChange={e => setDesonerado(e.target.value === 'deson')}
-                  className="p-1 rounded bg-zinc-900 border border-zinc-800 text-zinc-200 text-xs"
+                  className="p-1.5 rounded-lg bg-[#030712] border border-white/15 text-white text-xs focus:outline-none"
                 >
                   <option value="nao_deson">Não Desonerado</option>
                   <option value="deson">Desonerado</option>
@@ -475,7 +505,7 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
                 setSheetNames([])
                 setSelectedSheet('')
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-zinc-400 hover:text-zinc-200 text-xs transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 text-slate-400 hover:text-white text-xs transition-colors rounded-full hover:bg-white/[0.04]"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Cancelar
             </button>
@@ -483,14 +513,19 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
             <button 
               onClick={handleProcess}
               disabled={!descCol || isLoading}
-              className="px-5 py-2 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs rounded-md border border-zinc-200 transition-colors disabled:opacity-40 flex items-center gap-2"
+              className="btn-primary px-6 py-2.5 text-xs font-semibold disabled:opacity-40 flex items-center gap-2"
             >
               {isLoading ? (
                 <>
-                  <div className="w-3.5 h-3.5 border-2 border-zinc-950 border-t-transparent rounded-full animate-spin" />
-                  Processando Itens...
+                  <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                  <span>Cruzando com SINAPI...</span>
                 </>
-              ) : 'Executar Orçamento'}
+              ) : (
+                <>
+                  <span>Executar Orçamento</span>
+                  <Zap className="w-3.5 h-3.5 text-slate-950 fill-current" />
+                </>
+              )}
             </button>
           </div>
         </div>

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DeVici | Orçamentos de Obras com Inteligência Artificial & SINAPI",
-  description: "Plataforma de orçamentação para engenheiros e construtoras. Identifique serviços SINAPI, aplique BDI do TCU e gere orçamentos de obras em segundos.",
+  title: "DeVici | Orçamentos de Obras com Alta Precisão & SINAPI",
+  description: "Plataforma de engenharia de custos para orçamentistas e construtoras. Identificação inteligente na base SINAPI, BDI oficial do TCU e conciliação em segundos.",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body suppressHydrationWarning className="min-h-full flex flex-col bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white">
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white font-sans">
         <AuthProvider>
           {children}
         </AuthProvider>

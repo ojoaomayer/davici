@@ -14,6 +14,7 @@ import {
   Trash2,
   ExternalLink,
   Calculator,
+  ArrowRight,
 } from 'lucide-react'
 import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
@@ -92,9 +93,9 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-zinc-300 flex items-center justify-center font-mono text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-3.5 h-3.5 border-2 border-zinc-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#020617] text-slate-400 flex items-center justify-center font-mono text-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
           <span>Carregando workspace...</span>
         </div>
       </div>
@@ -107,38 +108,42 @@ export default function DashboardPage() {
   const usagePercent = isUnlimited ? 100 : Math.min(100, Math.round((planilhasUsadas / planilhasLimite) * 100))
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-zinc-800 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white relative overflow-hidden">
+      {/* Background Lighting & Blueprint Grid */}
+      <div className="absolute inset-0 blueprint-grid pointer-events-none opacity-50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-cinematic-glow pointer-events-none" />
+
       <Navbar />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <main className="relative z-10 flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Workspace Top Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-zinc-900/50 border border-zinc-800 p-5 rounded-lg">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-zinc-100">
+        <div className="glass-panel rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 blueprint-box">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl font-bold tracking-tight text-white">
                 Workspace • {user.displayName || user.email?.split('@')[0]}
               </h1>
-              <span className="px-1.5 py-0.2 rounded text-[10px] uppercase font-mono font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
+              <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-mono font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30">
                 Plano {userData?.plano || 'Free'}
               </span>
             </div>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              Histórico de orçamentos e conciliações SINAPI salvas na nuvem.
+            <p className="text-xs text-slate-400 font-normal">
+              Histórico de orçamentos e conciliações SINAPI salvas na nuvem corporativa.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Link
               href="/consultas"
-              className="px-3 py-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium transition-colors flex items-center gap-1.5"
+              className="btn-secondary px-3.5 py-1.5 text-xs font-medium flex items-center gap-1.5"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-400" />
-              <span>Consultar SINAPI</span>
+              <FileSpreadsheet className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Base SINAPI</span>
             </Link>
 
             <Link
               href="/ferramentas/calculadora-bdi"
-              className="px-3 py-1.5 rounded-md border border-zinc-800 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-xs font-medium transition-colors flex items-center gap-1.5"
+              className="btn-secondary px-3.5 py-1.5 text-xs font-medium flex items-center gap-1.5"
             >
               <Calculator className="w-3.5 h-3.5 text-emerald-400" />
               <span>BDI TCU</span>
@@ -146,7 +151,7 @@ export default function DashboardPage() {
 
             <Link
               href="/orcamento"
-              className="px-3.5 py-1.5 rounded-md bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold border border-zinc-200 transition-colors flex items-center gap-1.5 shadow-sm"
+              className="btn-primary px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Novo Orçamento</span>
@@ -156,111 +161,114 @@ export default function DashboardPage() {
 
         {/* Quota & Stat Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-zinc-900/30 border border-zinc-800 p-4 rounded-lg space-y-2">
-            <div className="text-[11px] font-mono uppercase text-zinc-500 font-semibold">
-              Consumo de Planilhas
+          <div className="glass-card p-5 rounded-xl space-y-3 blueprint-box">
+            <div className="text-[11px] font-mono uppercase text-slate-400 font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
+              <span>Consumo de Planilhas</span>
             </div>
             <div className="flex items-baseline justify-between font-mono">
-              <span className="text-xl font-bold text-zinc-100">
-                {planilhasUsadas} <span className="text-xs text-zinc-500 font-normal">/ {isUnlimited ? '∞' : planilhasLimite}</span>
+              <span className="text-2xl font-bold text-white">
+                {planilhasUsadas} <span className="text-xs text-slate-400 font-normal">/ {isUnlimited ? '∞' : planilhasLimite}</span>
               </span>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-slate-400">
                 {isUnlimited ? 'Ilimitado' : `${planilhasLimite - planilhasUsadas} restante(s)`}
               </span>
             </div>
-            <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-[#030712] rounded-full h-1.5 overflow-hidden border border-white/[0.08]">
               <div
-                className={`h-full rounded-full ${usagePercent >= 100 && !isUnlimited ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                className={`h-full rounded-full transition-all ${usagePercent >= 100 && !isUnlimited ? 'bg-amber-400' : 'bg-blue-400'}`}
                 style={{ width: `${isUnlimited ? 100 : usagePercent}%` }}
               />
             </div>
           </div>
 
-          <div className="bg-zinc-900/30 border border-zinc-800 p-4 rounded-lg space-y-2">
-            <div className="text-[11px] font-mono uppercase text-zinc-500 font-semibold">
-              Projetos Processados
+          <div className="glass-card p-5 rounded-xl space-y-2 blueprint-box">
+            <div className="text-[11px] font-mono uppercase text-slate-400 font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 neon-dot-blue" />
+              <span>Projetos Processados</span>
             </div>
-            <div className="text-xl font-bold font-mono text-zinc-100">
+            <div className="text-2xl font-bold font-mono text-white">
               {orcamentos.length}
             </div>
-            <div className="text-[11px] text-zinc-500 font-mono">
-              Base oficial SINAPI PR/BR
+            <div className="text-[11px] text-slate-400 font-mono">
+              Base SINAPI 27 UFs
             </div>
           </div>
 
-          <div className="bg-zinc-900/30 border border-zinc-800 p-4 rounded-lg space-y-2">
-            <div className="text-[11px] font-mono uppercase text-zinc-500 font-semibold">
-              Status do Motor de IA
+          <div className="glass-card p-5 rounded-xl space-y-2 blueprint-box">
+            <div className="text-[11px] font-mono uppercase text-slate-400 font-semibold flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 neon-dot-emerald" />
+              <span>Status do Motor</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-emerald-400 font-mono font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <div className="flex items-center gap-2 text-xs text-emerald-400 font-mono font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 neon-dot-emerald" />
               <span>Operacional (15.420 itens)</span>
             </div>
-            <div className="text-[11px] text-zinc-500 font-mono">
-              Acórdão TCU 2622 integrado
+            <div className="text-[11px] text-slate-400 font-mono">
+              Acórdão TCU 2622 ativo
             </div>
           </div>
         </div>
 
         {/* Budgets Table */}
-        <div className="bg-zinc-950 border border-zinc-800 rounded-lg overflow-hidden space-y-0">
-          <div className="bg-zinc-900/80 px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold text-zinc-200">
-              <FileSpreadsheet className="w-4 h-4 text-zinc-400" />
+        <div className="glass-panel rounded-2xl overflow-hidden blueprint-box">
+          <div className="bg-[#0b132b]/80 px-5 py-4 border-b border-white/[0.08] flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <FileSpreadsheet className="w-4 h-4 text-blue-400" />
               <span>Histórico de Planilhas Salvas</span>
             </div>
-            <span className="text-[11px] font-mono text-zinc-500">{orcamentos.length} registro(s)</span>
+            <span className="text-[11px] font-mono text-slate-400">{orcamentos.length} registro(s)</span>
           </div>
 
           {loadingDocs ? (
-            <div className="p-8 text-center text-xs text-zinc-500 font-mono">
+            <div className="p-12 text-center text-xs text-slate-400 font-mono">
               Carregando histórico...
             </div>
           ) : orcamentos.length === 0 ? (
-            <div className="p-12 text-center space-y-3">
-              <div className="text-zinc-500 text-xs font-mono">Nenhum orçamento salvo no momento.</div>
+            <div className="p-16 text-center space-y-4">
+              <div className="text-slate-400 text-xs font-mono">Nenhum orçamento salvo no momento.</div>
               <Link
                 href="/orcamento"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700 transition-colors"
+                className="btn-primary inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Criar Primeiro Orçamento
+                <span>Criar Primeiro Orçamento</span>
               </Link>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-zinc-900/40 text-zinc-500 font-mono text-[11px] uppercase tracking-wider border-b border-zinc-800">
-                    <th className="py-2.5 px-4 font-semibold">Identificação da Obra</th>
-                    <th className="py-2.5 px-4 font-semibold">Data</th>
-                    <th className="py-2.5 px-4 font-semibold">Qtd. Itens</th>
-                    <th className="py-2.5 px-4 font-semibold">UF / Regime</th>
-                    <th className="py-2.5 px-4 font-semibold text-right">Valor Total</th>
-                    <th className="py-2.5 px-4 font-semibold text-right">Ações</th>
+                  <tr className="bg-[#0b132b]/50 text-slate-400 font-mono text-[11px] uppercase tracking-wider border-b border-white/[0.08]">
+                    <th className="py-3 px-4 font-semibold">Identificação da Obra</th>
+                    <th className="py-3 px-4 font-semibold">Data</th>
+                    <th className="py-3 px-4 font-semibold">Qtd. Itens</th>
+                    <th className="py-3 px-4 font-semibold">UF / Regime</th>
+                    <th className="py-3 px-4 font-semibold text-right">Valor Total</th>
+                    <th className="py-3 px-4 font-semibold text-right">Ações</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/60 font-mono">
+                <tbody className="divide-y divide-white/[0.06] font-mono">
                   {orcamentos.map((orc) => (
-                    <tr key={orc.id} className="hover:bg-zinc-900/40 transition-colors">
-                      <td className="py-3 px-4 font-sans font-medium text-zinc-200">
+                    <tr key={orc.id} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="py-3.5 px-4 font-sans font-medium text-white">
                         <div>{orc.nome_obra || 'Orçamento de Obra'}</div>
-                        <div className="text-[10px] text-zinc-500 font-mono">ID: {orc.id.slice(0, 8)}</div>
+                        <div className="text-[10px] text-slate-400 font-mono">ID: {orc.id.slice(0, 8)}</div>
                       </td>
-                      <td className="py-3 px-4 text-zinc-400">
+                      <td className="py-3.5 px-4 text-slate-300">
                         {formatDate(orc.criado_em)}
                       </td>
-                      <td className="py-3 px-4 text-zinc-400">
+                      <td className="py-3.5 px-4 text-slate-300">
                         {orc.total_itens || 0} itens
                       </td>
-                      <td className="py-3 px-4 text-zinc-400">
-                        <span className="text-zinc-200 font-bold">{orc.uf || 'PR'}</span> • {orc.desonerado ? 'Desonerada' : 'Não Desonerada'}
+                      <td className="py-3.5 px-4 text-slate-300">
+                        <span className="text-blue-400 font-bold">{orc.uf || 'PR'}</span> • {orc.desonerado ? 'Desonerada' : 'Não Desonerada'}
                       </td>
-                      <td className="py-3 px-4 text-right font-bold text-emerald-400 tabular-nums">
+                      <td className="py-3.5 px-4 text-right font-bold text-emerald-400 tabular-nums">
                         {formatCurrency(orc.valor_total)}
                       </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
                           {orc.download_url && (
                             <a
                               href={orc.download_url}
@@ -268,7 +276,7 @@ export default function DashboardPage() {
                               target="_blank"
                               rel="noopener noreferrer"
                               title="Baixar planilha (.xlsx)"
-                              className="p-1.5 rounded bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 hover:border-zinc-700 transition-colors"
+                              className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.1] text-slate-300 hover:text-white border border-white/10 transition-colors"
                             >
                               <Download className="w-3.5 h-3.5" />
                             </a>
@@ -276,7 +284,7 @@ export default function DashboardPage() {
                           <button
                             onClick={() => handleDelete(orc.id)}
                             title="Remover registro"
-                            className="p-1.5 rounded bg-zinc-900 hover:bg-red-950/40 text-zinc-500 hover:text-red-400 border border-zinc-800 hover:border-red-900/50 transition-colors"
+                            className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>

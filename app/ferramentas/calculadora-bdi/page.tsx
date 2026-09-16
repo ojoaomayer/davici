@@ -13,6 +13,7 @@ import {
   Info,
   Layers,
   Table,
+  Sparkles,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 
@@ -62,16 +63,16 @@ export default function CalculadoraBDIPage() {
 
     let stat: 'baixo' | 'ideal' | 'alto' = 'ideal'
     let label = 'Dentro da faixa de aceitabilidade do TCU (Acórdão 2622/2013)'
-    let col = 'text-emerald-400 bg-emerald-950/30 border-emerald-800/60'
+    let col = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30'
 
     if (bdiResult < range.q1) {
       stat = 'baixo'
-      label = 'Abaixo do 1º Quartil do TCU (Possível subavaliação)'
-      col = 'text-amber-400 bg-amber-950/30 border-amber-800/60'
+      label = 'Abaixo do 1º Quartil do TCU (Possível subavaliação de custos indiretos)'
+      col = 'text-amber-400 bg-amber-500/10 border-amber-500/30'
     } else if (bdiResult > range.q3) {
       stat = 'alto'
-      label = 'Acima do 3º Quartil do TCU (Exige justificativa técnica formal)'
-      col = 'text-red-400 bg-red-950/30 border-red-800/60'
+      label = 'Acima do 3º Quartil do TCU (Exige justificativa técnica formal em licitações)'
+      col = 'text-rose-400 bg-rose-500/10 border-rose-500/30'
     }
 
     return {
@@ -112,39 +113,46 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100 selection:bg-zinc-800 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white relative overflow-hidden">
+      {/* Background Lighting & Blueprint Grid */}
+      <div className="absolute inset-0 blueprint-grid pointer-events-none opacity-50" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-cinematic-glow pointer-events-none" />
+
       <Navbar />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
         {/* Header */}
-        <div className="animate-fade-in border-b border-zinc-800 pb-5 space-y-1">
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="animate-fade-in border-b border-white/[0.08] pb-6 space-y-1.5">
+          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue animate-pulse" />
             <span>MÓDULO TÉCNICO • ACÓRDÃO 2622/2013 - TCU PLENÁRIO</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
-            Calculadora de BDI Oficial do TCU
+          <h1 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
+            Calculadora de BDI Oficial <span className="font-semibold text-blue-300">do TCU</span>
           </h1>
-          <p className="text-xs text-zinc-400 max-w-2xl leading-relaxed">
-            Cálculo de Benefícios e Despesas Indiretas para obras públicas e privadas de edificações com verificação de quartis de aceitabilidade.
+          <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+            Cálculo de Benefícios e Despesas Indiretas para obras de edificações com verificação analítica de quartis de conformidade do Tribunal de Contas da União.
           </p>
         </div>
 
         {/* Workspace Columns */}
         <div className="animate-fade-in-up delay-100 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Controls Column */}
-          <div className="hover-glow lg:col-span-7 bg-zinc-900/40 border border-zinc-800 rounded-lg p-5 space-y-5 transition-all duration-300">
-            <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 flex items-center justify-between">
-              <span>1. Parâmetros da Fórmula</span>
-              <span className="text-[10px] text-zinc-500 lowercase font-normal">faixas edificações</span>
+          <div className="glass-panel lg:col-span-7 rounded-2xl p-6 space-y-6 blueprint-box">
+            <div className="text-xs font-mono font-bold uppercase tracking-wider text-blue-400 border-b border-white/[0.08] pb-3 flex items-center justify-between">
+              <span className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
+                1. Parâmetros da Fórmula
+              </span>
+              <span className="text-[10px] text-slate-400 lowercase font-normal">faixas edificações</span>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {/* AC */}
-              <div className="bg-zinc-950/60 p-3 rounded border border-zinc-800/80 space-y-1">
+              <div className="bg-[#0b132b]/50 p-3.5 rounded-xl border border-white/[0.06] space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-mono">
-                  <span className="text-zinc-300">Administração Central (AC)</span>
-                  <span className="font-bold text-zinc-100">{ac.toFixed(2)}%</span>
+                  <span className="text-slate-300">Administração Central (AC)</span>
+                  <span className="font-bold text-white">{ac.toFixed(2)}%</span>
                 </div>
                 <input
                   type="range"
@@ -153,9 +161,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
                   step="0.05"
                   value={ac}
                   onChange={(e) => setAc(parseFloat(e.target.value))}
-                  className="w-full accent-zinc-200 bg-zinc-800 h-1.5 rounded cursor-pointer"
+                  className="w-full accent-blue-400 bg-slate-800 h-1.5 rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+                <div className="flex justify-between text-[10px] font-mono text-slate-400">
                   <span>Mín: 3,00%</span>
                   <span>Médio: 4,00%</span>
                   <span>Máx: 5,50%</span>
@@ -163,10 +171,10 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
               </div>
 
               {/* SG */}
-              <div className="bg-zinc-950/60 p-3 rounded border border-zinc-800/80 space-y-1">
+              <div className="bg-[#0b132b]/50 p-3.5 rounded-xl border border-white/[0.06] space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-mono">
-                  <span className="text-zinc-300">Seguros e Garantias (S+G)</span>
-                  <span className="font-bold text-zinc-100">{sg.toFixed(2)}%</span>
+                  <span className="text-slate-300">Seguros e Garantias (S+G)</span>
+                  <span className="font-bold text-white">{sg.toFixed(2)}%</span>
                 </div>
                 <input
                   type="range"
@@ -175,9 +183,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
                   step="0.05"
                   value={sg}
                   onChange={(e) => setSg(parseFloat(e.target.value))}
-                  className="w-full accent-zinc-200 bg-zinc-800 h-1.5 rounded cursor-pointer"
+                  className="w-full accent-blue-400 bg-slate-800 h-1.5 rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+                <div className="flex justify-between text-[10px] font-mono text-slate-400">
                   <span>Mín: 0,80%</span>
                   <span>Médio: 0,80%</span>
                   <span>Máx: 1,00%</span>
@@ -185,10 +193,10 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
               </div>
 
               {/* R */}
-              <div className="bg-zinc-950/60 p-3 rounded border border-zinc-800/80 space-y-1">
+              <div className="bg-[#0b132b]/50 p-3.5 rounded-xl border border-white/[0.06] space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-mono">
-                  <span className="text-zinc-300">Riscos (R)</span>
-                  <span className="font-bold text-zinc-100">{r.toFixed(2)}%</span>
+                  <span className="text-slate-300">Riscos (R)</span>
+                  <span className="font-bold text-white">{r.toFixed(2)}%</span>
                 </div>
                 <input
                   type="range"
@@ -197,9 +205,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
                   step="0.05"
                   value={r}
                   onChange={(e) => setR(parseFloat(e.target.value))}
-                  className="w-full accent-zinc-200 bg-zinc-800 h-1.5 rounded cursor-pointer"
+                  className="w-full accent-blue-400 bg-slate-800 h-1.5 rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+                <div className="flex justify-between text-[10px] font-mono text-slate-400">
                   <span>Mín: 0,97%</span>
                   <span>Médio: 0,97%</span>
                   <span>Máx: 1,27%</span>
@@ -207,10 +215,10 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
               </div>
 
               {/* DF */}
-              <div className="bg-zinc-950/60 p-3 rounded border border-zinc-800/80 space-y-1">
+              <div className="bg-[#0b132b]/50 p-3.5 rounded-xl border border-white/[0.06] space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-mono">
-                  <span className="text-zinc-300">Despesas Financeiras (DF)</span>
-                  <span className="font-bold text-zinc-100">{df.toFixed(2)}%</span>
+                  <span className="text-slate-300">Despesas Financeiras (DF)</span>
+                  <span className="font-bold text-white">{df.toFixed(2)}%</span>
                 </div>
                 <input
                   type="range"
@@ -219,9 +227,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
                   step="0.05"
                   value={df}
                   onChange={(e) => setDf(parseFloat(e.target.value))}
-                  className="w-full accent-zinc-200 bg-zinc-800 h-1.5 rounded cursor-pointer"
+                  className="w-full accent-blue-400 bg-slate-800 h-1.5 rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+                <div className="flex justify-between text-[10px] font-mono text-slate-400">
                   <span>Mín: 0,59%</span>
                   <span>Médio: 1,23%</span>
                   <span>Máx: 1,39%</span>
@@ -229,9 +237,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
               </div>
 
               {/* L */}
-              <div className="bg-zinc-950/60 p-3 rounded border border-zinc-800/80 space-y-1">
+              <div className="bg-[#0b132b]/50 p-3.5 rounded-xl border border-white/[0.06] space-y-1.5">
                 <div className="flex justify-between items-center text-xs font-mono">
-                  <span className="text-zinc-300">Lucro / Remuneração da Construtora (L)</span>
+                  <span className="text-slate-300">Lucro / Remuneração da Construtora (L)</span>
                   <span className="font-bold text-emerald-400">{l.toFixed(2)}%</span>
                 </div>
                 <input
@@ -241,9 +249,9 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
                   step="0.1"
                   value={l}
                   onChange={(e) => setL(parseFloat(e.target.value))}
-                  className="w-full accent-emerald-500 bg-zinc-800 h-1.5 rounded cursor-pointer"
+                  className="w-full accent-emerald-400 bg-slate-800 h-1.5 rounded-lg cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] font-mono text-zinc-500">
+                <div className="flex justify-between text-[10px] font-mono text-slate-400">
                   <span>Mín: 6,16%</span>
                   <span>Médio: 7,40%</span>
                   <span>Máx: 8,96%</span>
@@ -252,106 +260,107 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
             </div>
 
             {/* Tributos */}
-            <div className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 border-b border-zinc-800 pb-2 pt-2">
-              2. Tributos Diretos sobre Faturamento
+            <div className="text-xs font-mono font-bold uppercase tracking-wider text-blue-400 border-b border-white/[0.08] pb-3 pt-2">
+              2. Tributos Incidentes sobre Faturamento
             </div>
 
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-zinc-950 p-2.5 rounded border border-zinc-800 space-y-1">
-                <label className="text-[11px] font-mono text-zinc-400">PIS (%)</label>
+              <div className="bg-[#0b132b]/50 p-3 rounded-xl border border-white/[0.06] space-y-1.5">
+                <label className="text-[11px] font-mono text-slate-400">PIS (%)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={pis}
                   onChange={(e) => setPis(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-zinc-900 border border-zinc-800 p-1.5 rounded text-xs font-mono text-zinc-100"
+                  className="w-full bg-[#030712] border border-white/10 p-2 rounded-lg text-xs font-mono text-white focus:outline-none focus:border-blue-500/50"
                 />
               </div>
 
-              <div className="bg-zinc-950 p-2.5 rounded border border-zinc-800 space-y-1">
-                <label className="text-[11px] font-mono text-zinc-400">COFINS (%)</label>
+              <div className="bg-[#0b132b]/50 p-3 rounded-xl border border-white/[0.06] space-y-1.5">
+                <label className="text-[11px] font-mono text-slate-400">COFINS (%)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={cofins}
                   onChange={(e) => setCofins(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-zinc-900 border border-zinc-800 p-1.5 rounded text-xs font-mono text-zinc-100"
+                  className="w-full bg-[#030712] border border-white/10 p-2 rounded-lg text-xs font-mono text-white focus:outline-none focus:border-blue-500/50"
                 />
               </div>
 
-              <div className="bg-zinc-950 p-2.5 rounded border border-zinc-800 space-y-1">
-                <label className="text-[11px] font-mono text-zinc-400">ISS (%)</label>
+              <div className="bg-[#0b132b]/50 p-3 rounded-xl border border-white/[0.06] space-y-1.5">
+                <label className="text-[11px] font-mono text-slate-400">ISS (%)</label>
                 <input
                   type="number"
                   step="0.01"
                   value={iss}
                   onChange={(e) => setIss(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-zinc-900 border border-zinc-800 p-1.5 rounded text-xs font-mono text-zinc-100"
+                  className="w-full bg-[#030712] border border-white/10 p-2 rounded-lg text-xs font-mono text-white focus:outline-none focus:border-blue-500/50"
                 />
               </div>
             </div>
 
             {/* Desoneração Toggle */}
-            <div className="bg-zinc-950 border border-zinc-800 p-3 rounded flex items-center justify-between text-xs">
+            <div className="bg-[#0b132b]/50 border border-white/[0.08] p-4 rounded-xl flex items-center justify-between text-xs">
               <div>
-                <div className="font-semibold text-zinc-200">Desoneração da Folha (CPRB +4,50%)</div>
-                <div className="text-[11px] text-zinc-500">Conforme Lei 12.844/2013 para construção civil</div>
+                <div className="font-semibold text-white">Desoneração da Folha (CPRB +4,50%)</div>
+                <div className="text-[11px] text-slate-400">Conforme Lei 12.844/2013 para o setor de construção civil</div>
               </div>
               <input
                 type="checkbox"
                 checked={comDesoneracao}
                 onChange={(e) => setComDesoneracao(e.target.checked)}
-                className="w-4 h-4 accent-emerald-500 cursor-pointer"
+                className="w-4 h-4 accent-blue-500 cursor-pointer"
               />
             </div>
           </div>
 
           {/* Results Column */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-5 space-y-4">
-              <div className="text-xs font-mono text-zinc-500 uppercase tracking-wider">
-                Resultado Consolidado
+            <div className="glass-panel rounded-2xl p-6 space-y-5 blueprint-box">
+              <div className="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 neon-dot-emerald" />
+                <span>Resultado Consolidado</span>
               </div>
 
-              <div className="text-center py-2 bg-zinc-950 rounded border border-zinc-800/80">
-                <div className="text-4xl font-mono font-bold text-emerald-400 tabular-nums">
+              <div className="text-center py-4 bg-[#030712]/80 rounded-xl border border-white/[0.08]">
+                <div className="text-4xl sm:text-5xl font-mono font-bold text-emerald-400 tabular-nums">
                   {bdi.toFixed(2)}%
                 </div>
-                <div className="text-[11px] font-mono text-zinc-500 mt-1">
-                  Total de Tributos: {totalTributos.toFixed(2)}%
+                <div className="text-[11px] font-mono text-slate-400 mt-1.5">
+                  Total de Tributos (T): {totalTributos.toFixed(2)}%
                 </div>
               </div>
 
               {/* Status Alert */}
-              <div className={`p-3 rounded border text-xs font-mono space-y-0.5 ${statusColor}`}>
+              <div className={`p-4 rounded-xl border text-xs font-mono space-y-1 ${statusColor}`}>
                 <div className="font-bold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-current" />
                   <span>Diagnóstico TCU:</span>
                 </div>
-                <div className="text-[11px] leading-tight">{statusLabel}</div>
+                <div className="text-[11px] leading-relaxed font-normal">{statusLabel}</div>
               </div>
 
               {/* Quartile Table */}
-              <div className="border border-zinc-800 rounded overflow-hidden text-xs font-mono">
-                <div className="bg-zinc-900 p-2 text-zinc-400 text-[10px] uppercase font-bold border-b border-zinc-800">
+              <div className="border border-white/[0.08] rounded-xl overflow-hidden text-xs font-mono">
+                <div className="bg-[#0b132b]/80 p-2.5 text-slate-400 text-[10px] uppercase font-bold border-b border-white/[0.08]">
                   Quartis TCU para Edificações
                 </div>
-                <div className="grid grid-cols-3 divide-x divide-zinc-800 text-center bg-zinc-950 text-xs">
-                  <div className="p-2">
-                    <div className="text-[10px] text-zinc-500">1º Quartil</div>
-                    <div className="font-bold text-zinc-300">
+                <div className="grid grid-cols-3 divide-x divide-white/[0.08] text-center bg-[#030712]/60 text-xs">
+                  <div className="p-2.5">
+                    <div className="text-[10px] text-slate-400">1º Quartil</div>
+                    <div className="font-bold text-slate-200 mt-0.5">
                       {comDesoneracao ? TCU_RANGES.bdiComDeson.q1 : TCU_RANGES.bdiSemDeson.q1}%
                     </div>
                   </div>
-                  <div className="p-2 bg-zinc-900/40">
+                  <div className="p-2.5 bg-blue-500/10">
                     <div className="text-[10px] text-emerald-400">Médio</div>
-                    <div className="font-bold text-emerald-400">
+                    <div className="font-bold text-emerald-400 mt-0.5">
                       {comDesoneracao ? TCU_RANGES.bdiComDeson.med : TCU_RANGES.bdiSemDeson.med}%
                     </div>
                   </div>
-                  <div className="p-2">
-                    <div className="text-[10px] text-zinc-500">3º Quartil</div>
-                    <div className="font-bold text-zinc-300">
+                  <div className="p-2.5">
+                    <div className="text-[10px] text-slate-400">3º Quartil</div>
+                    <div className="font-bold text-slate-200 mt-0.5">
                       {comDesoneracao ? TCU_RANGES.bdiComDeson.q3 : TCU_RANGES.bdiSemDeson.q3}%
                     </div>
                   </div>
@@ -362,16 +371,16 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
               <button
                 type="button"
                 onClick={copyMemorial}
-                className="w-full py-2 px-3 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-mono font-medium flex items-center justify-center gap-2 transition-colors"
+                className="btn-secondary w-full py-2.5 text-xs font-mono font-medium flex items-center justify-center gap-2"
               >
                 {copied ? (
                   <>
                     <Check className="w-3.5 h-3.5 text-emerald-400" />
-                    <span className="text-emerald-400">Memorial Copiado</span>
+                    <span className="text-emerald-400">Memorial Copiado para a Área de Transferência</span>
                   </>
                 ) : (
                   <>
-                    <Copy className="w-3.5 h-3.5 text-zinc-400" />
+                    <Copy className="w-3.5 h-3.5 text-blue-400" />
                     <span>Copiar Memorial para ART / Licitação</span>
                   </>
                 )}
@@ -379,18 +388,18 @@ Fonte: DeVici Software de Engenharia (Acórdão 2622/2013-TCU)`
             </div>
 
             {/* Direct Workflow Link */}
-            <div className="bg-zinc-900/30 border border-zinc-800 p-4 rounded-lg space-y-2 text-xs">
-              <div className="font-semibold text-zinc-200">
+            <div className="glass-card p-5 rounded-2xl space-y-2 text-xs">
+              <div className="font-semibold text-white">
                 Aplicar BDI na Planilha SINAPI
               </div>
-              <p className="text-zinc-400 leading-relaxed text-[11px]">
-                O DeVici aplica este percentual automaticamente nas colunas com BDI em todas as etapas da sua planilha.
+              <p className="text-slate-400 leading-relaxed text-[11px]">
+                O DeVici aplica este percentual automaticamente nas colunas com BDI em todas as etapas da sua planilha orçamentária.
               </p>
               <Link
                 href="/orcamento"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 pt-1"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 pt-1"
               >
-                <span>Abrir Orçamentador</span>
+                <span>Ir para o Orçamentador</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import * as xlsx from 'xlsx'
-import { FileDown, CloudUpload, CheckCircle2, Building2, ArrowRight } from 'lucide-react'
+import { FileDown, CloudUpload, CheckCircle2, Building2, ArrowRight, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { collection, addDoc, doc, updateDoc, increment, serverTimestamp } from 'firebase/firestore'
@@ -135,55 +135,56 @@ export default function ExportSection({ results, config }: ExportSectionProps) {
   }
 
   return (
-    <div className="w-full bg-zinc-900/40 border border-zinc-800 rounded-lg p-6 space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-zinc-800 pb-5">
-        <div className="space-y-1">
+    <div className="w-full glass-panel rounded-2xl p-6 sm:p-7 space-y-6 blueprint-box">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 border-b border-white/[0.08] pb-6">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="w-2 h-2 rounded-full bg-emerald-400 neon-dot-emerald" />
             <span className="text-xs font-mono uppercase font-semibold text-emerald-400">
               Processamento Concluído • SINAPI {config.uf} ({config.desonerado ? 'Desonerado' : 'Não Desonerado'})
             </span>
           </div>
-          <h3 className="text-base font-bold text-zinc-100">
-            Exportar e Salvar Orçamento
+          <h3 className="text-lg font-bold text-white tracking-tight">
+            Exportação do Orçamento Executivo
           </h3>
-          <p className="text-xs text-zinc-400 max-w-xl">
-            A planilha gerada inclui fórmulas nativas de multiplicação (Qtd × Preço) e totalizadores compatíveis com Excel, LibreOffice e Google Planilhas.
+          <p className="text-xs text-slate-400 max-w-xl font-normal">
+            A planilha gerada inclui fórmulas nativas de multiplicação (<span className="font-mono text-slate-300">Qtd × Preço</span>) e totalizadores compatíveis com auditorias oficiais.
           </p>
         </div>
 
         {/* Export Button */}
         <button
           onClick={handleExport}
-          className="px-5 py-2.5 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs rounded-md border border-zinc-200 transition-colors flex items-center justify-center gap-2 shrink-0"
+          className="btn-primary px-6 py-3 text-xs font-semibold flex items-center justify-center gap-2 shrink-0 group"
         >
-          <FileDown className="w-4 h-4 text-zinc-800" />
+          <FileDown className="w-4 h-4 text-slate-900" />
           <span>Baixar Planilha (.xlsx)</span>
+          <ArrowRight className="w-3.5 h-3.5 text-slate-900 group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>
 
       {/* Cloud Workspace Save */}
       <div className="pt-1">
         {user ? (
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-zinc-950 p-3 rounded-md border border-zinc-800">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-[#0b132b]/50 p-3.5 rounded-xl border border-white/[0.08]">
             <div className="flex-1 relative">
-              <Building2 className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Building2 className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={nomeObra}
                 onChange={(e) => setNomeObra(e.target.value)}
                 placeholder="Identificação da Obra / Contrato"
-                className="w-full pl-9 pr-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded text-xs text-zinc-200 placeholder-zinc-500 focus:border-zinc-700 outline-none font-mono"
+                className="w-full pl-10 pr-3 py-2 bg-[#030712]/80 border border-white/10 rounded-lg text-xs text-white placeholder-slate-500 focus:border-blue-500/50 outline-none font-mono transition-colors"
               />
             </div>
 
             {savedSuccess ? (
               <Link
                 href="/dashboard"
-                className="px-4 py-1.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-emerald-950 transition-colors"
+                className="px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center justify-center gap-2 hover:bg-emerald-500/20 transition-all shadow-[0_0_15px_rgba(52,211,153,0.15)]"
               >
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Salvo no Painel</span>
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Salvo no Workspace</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             ) : (
@@ -191,13 +192,13 @@ export default function ExportSection({ results, config }: ExportSectionProps) {
                 type="button"
                 onClick={handleSaveToCloud}
                 disabled={isSaving}
-                className="px-4 py-1.5 rounded bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors disabled:opacity-50"
+                className="btn-secondary px-5 py-2 text-xs font-medium flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {isSaving ? (
-                  <div className="w-3.5 h-3.5 border-2 border-zinc-300 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <>
-                    <CloudUpload className="w-3.5 h-3.5 text-zinc-400" />
+                    <CloudUpload className="w-4 h-4 text-blue-400" />
                     <span>Salvar no Histórico</span>
                   </>
                 )}
@@ -205,13 +206,13 @@ export default function ExportSection({ results, config }: ExportSectionProps) {
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-between bg-zinc-950 p-3 rounded-md border border-zinc-800 text-xs">
-            <span className="text-zinc-400">
-              Deseja salvar esta obra no seu painel corporativo na nuvem?
+          <div className="flex items-center justify-between bg-[#0b132b]/40 p-4 rounded-xl border border-white/[0.08] text-xs">
+            <span className="text-slate-400">
+              Deseja salvar esta obra no seu workspace corporativo na nuvem?
             </span>
             <Link
               href="/login?mode=signup"
-              className="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 font-medium rounded transition-colors text-xs"
+              className="btn-secondary px-4 py-1.5 text-xs font-medium"
             >
               Criar Conta Gratuita
             </Link>

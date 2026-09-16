@@ -77,9 +77,9 @@ export default function Navbar() {
         </div>
 
         {/* Right CTA / Auth Status & Mobile Menu Button */}
-        <div className="flex items-center gap-3">
-          {/* Desktop Auth */}
-          <div className="hidden sm:flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Desktop Auth (Hidden on small screens where drawer is used) */}
+          <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-3">
                 <Link
@@ -125,6 +125,16 @@ export default function Navbar() {
               </div>
             )}
           </div>
+
+          {/* Quick mobile action & hamburger */}
+          {!user && (
+            <Link
+              href="/login?mode=signup"
+              className="md:hidden btn-primary px-3 py-1 text-[11px] font-semibold"
+            >
+              Começar
+            </Link>
+          )}
 
           {/* Mobile hamburger button */}
           <button

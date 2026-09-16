@@ -44,20 +44,20 @@ export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-white relative bg-gradient-to-b from-[#020617] via-[#050b14] via-60% to-[#020617]">
+    <div className="min-h-screen bg-[#020617] text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-white relative bg-gradient-to-b from-[#020617] via-[#050b14] via-60% to-[#020617] w-full overflow-x-hidden max-w-full">
       <Navbar />
 
       {/* 1. HERO SECTION (DOBRA PRINCIPAL) */}
-      <section className="relative z-10 w-full overflow-hidden flex flex-col justify-center">
+      <section className="relative z-10 w-full overflow-hidden flex flex-col justify-center max-w-full">
         {/* Localized Particles Container */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden max-w-full">
           <ParticlesComponent />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 lg:pt-20 pb-12 sm:pb-16 text-center space-y-8">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 lg:pt-20 pb-10 sm:pb-16 text-center space-y-8 w-full">
           {/* Headline (H1) */}
-          <div className="max-w-4xl mx-auto space-y-5">
-            <h1 className="animate-fade-in-up delay-100 text-3xl sm:text-5xl lg:text-[52px] font-light tracking-tight text-white leading-[1.18]">
+          <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
+            <h1 className="animate-fade-in-up delay-100 text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-light tracking-tight text-white leading-[1.2] max-w-full">
               Seu orçamento pronto <br className="hidden sm:inline" />
               <span className="font-semibold bg-clip-text text-transparent bg-gradient-to-b from-white via-slate-100 to-blue-200">
                 enquanto você toma um{' '}
@@ -69,13 +69,13 @@ export default function LandingPage() {
             </h1>
 
             {/* Sub-headline */}
-            <p className="animate-fade-in-up delay-200 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal">
+            <p className="animate-fade-in-up delay-200 text-xs sm:text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal px-2">
               Esqueça o copia-e-cola em planilhas intermináveis da Caixa. O DeVici lê a sua lista de quantitativos, encontra a composição exata na SINAPI e entrega seu orçamento fechado e conferido em minutos.
             </p>
           </div>
 
           {/* CTAs Principais */}
-          <div className="animate-fade-in-up delay-300 flex flex-col items-center justify-center gap-3 pt-2">
+          <div className="animate-fade-in-up delay-300 flex flex-col items-center justify-center gap-3 pt-2 w-full">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
               <Link
                 href="/orcamento"
@@ -97,7 +97,7 @@ export default function LandingPage() {
             </div>
 
             {/* Micro-copy de Confiança */}
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-slate-400 font-mono pt-2 text-center">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-slate-400 font-mono pt-2 text-center max-w-full px-2">
               <span>✓ Sem cartão de crédito</span>
               <span className="hidden sm:inline text-slate-600">•</span>
               <span>✓ Bases SINAPI de todos os estados</span>
@@ -107,18 +107,18 @@ export default function LandingPage() {
           </div>
 
           {/* Demonstration Card (Preview Interativo) */}
-          <div id="demonstracao" className="w-full max-w-4xl mx-auto pt-8">
-            <div className="glass-panel rounded-xl overflow-hidden text-left shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] blueprint-box">
+          <div id="demonstracao" className="w-full max-w-4xl mx-auto pt-6 px-1 sm:px-0">
+            <div className="glass-panel rounded-xl overflow-hidden text-left shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] blueprint-box w-full">
               <div className="bg-[#0b132b]/60 px-4 py-2.5 border-b border-white/[0.08] flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
                 <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
                 <span className="w-2.5 h-2.5 rounded-full bg-white/10" />
               </div>
 
-              <div className="p-3 sm:p-6 font-mono text-xs space-y-3 overflow-x-auto bg-[#030712]/50">
-                <div className="p-3.5 bg-slate-900/40 rounded-lg border border-white/[0.06] space-y-2 min-w-[320px] sm:min-w-0">
+              <div className="p-3 sm:p-6 font-mono text-xs space-y-3 overflow-x-auto bg-[#030712]/50 w-full">
+                <div className="p-3 sm:p-3.5 bg-slate-900/40 rounded-lg border border-white/[0.06] space-y-2 w-full">
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-400">
-                    <span className="text-slate-500 font-bold">01</span>
+                    <span className="text-slate-500 font-bold shrink-0">01</span>
                     <span className="truncate">&quot;Locação convencional de obra através de gabarito de tábuas corridas&quot; (50 M)</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-200">
@@ -131,9 +131,9 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-900/40 rounded-lg border border-white/[0.06] space-y-2 min-w-[320px] sm:min-w-0">
+                <div className="p-3 sm:p-3.5 bg-slate-900/40 rounded-lg border border-white/[0.06] space-y-2 w-full">
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-400">
-                    <span className="text-slate-500 font-bold">02</span>
+                    <span className="text-slate-500 font-bold shrink-0">02</span>
                     <span className="truncate">&quot;Concreto usinado bombeável fck 25 MPa para vigas e pilares&quot; (15 M3)</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-200">

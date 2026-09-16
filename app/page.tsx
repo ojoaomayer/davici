@@ -48,13 +48,13 @@ export default function LandingPage() {
       <Navbar />
 
       {/* 1. HERO SECTION (DOBRA PRINCIPAL) */}
-      <section className="relative z-10 w-full overflow-hidden min-h-[calc(90vh-4rem)] flex flex-col justify-center">
+      <section className="relative z-10 w-full overflow-hidden flex flex-col justify-center">
         {/* Localized Particles Container */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
           <ParticlesComponent />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 lg:pt-36 pb-24 sm:pb-32 text-center space-y-10">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 lg:pt-20 pb-12 sm:pb-16 text-center space-y-8">
           {/* Headline (H1) */}
           <div className="max-w-4xl mx-auto space-y-5">
             <h1 className="animate-fade-in-up delay-100 text-3xl sm:text-5xl lg:text-[52px] font-light tracking-tight text-white leading-[1.18]">

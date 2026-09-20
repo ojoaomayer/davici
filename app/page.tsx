@@ -361,7 +361,7 @@ export default function LandingPage() {
           <div className="glass-panel rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-6 relative border-blue-500/40 shadow-[0_0_35px_rgba(59,130,246,0.18)]">
             <div className="absolute -top-3 right-6">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-blue-500 text-slate-950 shadow-[0_0_12px_rgba(59,130,246,0.8)]">
-                O preferido de projetistas e peritos
+                Mais usado
               </span>
             </div>
 

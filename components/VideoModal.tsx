@@ -2,20 +2,18 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Sparkles, Play, Volume2 } from 'lucide-react'
+import { X } from 'lucide-react'
 
 interface VideoModalProps {
   isOpen: boolean
   onClose: () => void
   videoSrc: string
-  title?: string
 }
 
 export function VideoModal({
   isOpen,
   onClose,
   videoSrc,
-  title = 'Demonstração do DeVici',
 }: VideoModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mounted, setMounted] = useState(false)
@@ -66,13 +64,9 @@ export function VideoModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-[#0b132b] border-b border-white/[0.1] shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 bg-[#0b132b] border-b border-white/[0.1] shrink-0">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-400 neon-dot-blue" />
-            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              {title}
-            </span>
           </div>
 
           <button

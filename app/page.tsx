@@ -56,7 +56,6 @@ export default function LandingPage() {
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
         videoSrc="/video_hero_section.mp4"
-        title="Demonstração do DeVici em Ação"
       />
 
       {/* 1. HERO SECTION (DOBRA PRINCIPAL) */}

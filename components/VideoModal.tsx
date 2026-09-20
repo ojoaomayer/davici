@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
-import { X, Sparkles } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { X, Sparkles, Play, Volume2 } from 'lucide-react'
 
 interface VideoModalProps {
   isOpen: boolean
@@ -17,6 +18,11 @@ export function VideoModal({
   title = 'Demonstração do DeVici',
 }: VideoModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -30,8 +36,8 @@ export function VideoModal({
       window.addEventListener('keydown', handleKeyDown)
       if (videoRef.current) {
         videoRef.current.currentTime = 0
-        videoRef.current.play().catch(() => {
-          // Autoplay blocked by browser policy, user will click play
+        videoRef.current.play().catch((err) => {
+          console.log('Autoplay com áudio requer interação do usuário:', err)
         })
       }
     } else {
@@ -47,19 +53,20 @@ export function VideoModal({
     }
   }, [isOpen, onClose])
 
-  if (!isOpen) return null
+  if (!mounted || !isOpen) return null
 
-  return (
+  const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 md:p-8 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 md:p-8 bg-black/85 backdrop-blur-md animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl bg-[#030712] border border-blue-500/30 rounded-2xl shadow-[0_0_50px_rgba(59,130,246,0.2)] overflow-hidden animate-scale-up"
+        className="relative w-full max-w-5xl bg-[#030712] border border-blue-500/40 rounded-2xl shadow-[0_0_50px_rgba(59,130,246,0.3)] overflow-hidden animate-scale-in flex flex-col"
+        style={{ maxHeight: '90vh' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-5 py-3.5 bg-[#0b132b]/90 border-b border-white/[0.08]">
+        <div className="flex items-center justify-between px-5 py-3.5 bg-[#0b132b] border-b border-white/[0.1] shrink-0">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-blue-400 neon-dot-blue" />
             <span className="text-xs font-mono font-semibold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
@@ -78,19 +85,22 @@ export function VideoModal({
         </div>
 
         {/* Video Player Container */}
-        <div className="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
+        <div className="relative w-full bg-black flex items-center justify-center overflow-hidden" style={{ minHeight: '320px' }}>
           <video
             ref={videoRef}
-            src={videoSrc}
             controls
             autoPlay
             playsInline
-            className="w-full h-full object-contain"
+            preload="auto"
+            className="w-full h-auto max-h-[75vh] object-contain block"
           >
-            Seu navegador não suporta a reprodução deste vídeo.
+            <source src={videoSrc} type="video/mp4" />
+            Seu navegador não suporta a tag de vídeo.
           </video>
         </div>
       </div>
     </div>
   )
+
+  return createPortal(modalContent, document.body)
 }

@@ -1,62 +1,28 @@
-'use client'
+// Server Component — sem 'use client', sem useState, sem hooks
+// Toda a interatividade foi movida para Client Components mínimos:
+//   HeroActions.tsx → botões do hero + VideoModal
+//   FaqSection.tsx  → accordion do FAQ
+//   CheckoutButton  → botões de checkout dos planos pagos
 
-import { useState } from 'react'
 import Link from 'next/link'
 import {
-  FileSpreadsheet,
   Calculator,
   ArrowRight,
   Database,
-  Cpu,
-  Table,
   Check,
   X,
-  ChevronDown,
-  Layers,
-  Sparkles,
-  ShieldCheck,
-  FileCheck,
-  Download,
-  Play,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import ParticlesComponent from '@/components/ui/particles-bg'
 import { CheckoutButton } from '@/components/CheckoutButton'
-import { VideoModal } from '@/components/VideoModal'
-
-const FAQ_ITEMS = [
-  {
-    question: 'E se a IA errar algum código ou insumo?',
-    answer:
-      'O DeVici não toma decisões às cegas. Ele atribui uma nota de confiança (de 0 a 100%) para cada linha. Linhas com correspondência duvidosa são destacadas em amarelo/vermelho com as 3 opções mais próximas para você validar com um clique.',
-  },
-  {
-    question: 'As tabelas de preços estão atualizadas?',
-    answer:
-      'Sim. O banco de dados do DeVici é sincronizado mensalmente assim que a Caixa Econômica Federal e o DNIT publicam os relatórios oficiais desonerados e não desonerados.',
-  },
-  {
-    question: 'Posso editar o arquivo depois de baixar?',
-    answer:
-      'Totalmente. O arquivo gerado é um .xlsx nativo, com as fórmulas originais de multiplicação e soma de BDI preservadas, permitindo qualquer ajuste fino no seu Excel.',
-  },
-]
+import { HeroActions } from '@/components/HeroActions'
+import { FaqSection } from '@/components/FaqSection'
 
 export default function LandingPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
-
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-white relative bg-gradient-to-b from-[#020617] via-[#050b14] via-60% to-[#020617] w-full overflow-x-hidden max-w-full">
       <Navbar />
-
-      {/* Video Modal Popup */}
-      <VideoModal
-        isOpen={isVideoModalOpen}
-        onClose={() => setIsVideoModalOpen(false)}
-        videoSrc="/video_hero_section.mp4"
-      />
 
       {/* 1. HERO SECTION (DOBRA PRINCIPAL) */}
       <section className="relative z-10 w-full overflow-hidden flex flex-col justify-center max-w-full">
@@ -85,41 +51,8 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* CTAs Principais */}
-          <div className="animate-fade-in-up delay-300 flex flex-col items-center justify-center gap-3 pt-2 w-full">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
-              <Link
-                href="/orcamento"
-                className="btn-primary w-full sm:w-auto px-7 py-3.5 text-sm font-semibold flex items-center justify-center gap-2.5 group"
-              >
-                <FileSpreadsheet className="w-4 h-4 text-slate-900" />
-                <span>Orçar primeira planilha grátis</span>
-                <div className="w-5 h-5 rounded-full bg-slate-900/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
-                </div>
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => setIsVideoModalOpen(true)}
-                className="btn-secondary w-full sm:w-auto px-6 py-3.5 text-xs sm:text-sm font-medium flex items-center justify-center gap-2.5 cursor-pointer group"
-              >
-                <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
-                  <Play className="w-2.5 h-2.5 text-blue-400 fill-blue-400 ml-0.5" />
-                </div>
-                <span>Ver demonstração</span>
-              </button>
-            </div>
-
-            {/* Micro-copy de Confiança */}
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-slate-400 font-mono pt-2 text-center max-w-full px-2">
-              <span>✓ Sem cartão de crédito</span>
-              <span className="hidden sm:inline text-slate-600">•</span>
-              <span>✓ Bases SINAPI de todos os estados</span>
-              <span className="hidden sm:inline text-slate-600">•</span>
-              <span>✓ Exportação 100% editável em Excel</span>
-            </div>
-          </div>
+          {/* CTAs — Client Component mínimo (VideoModal + botões) */}
+          <HeroActions />
 
           {/* Demonstration Card (Preview Interativo) */}
           <div id="demonstracao" className="w-full max-w-4xl mx-auto pt-6 px-1 sm:px-0">
@@ -528,36 +461,8 @@ export default function LandingPage() {
           </h2>
         </div>
 
-        <div className="w-full space-y-3">
-          {FAQ_ITEMS.map((item, idx) => {
-            const isOpen = openFaq === idx
-            return (
-              <div
-                key={idx}
-                className="w-full glass-card rounded-xl border border-white/[0.08] overflow-hidden transition-all duration-200"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 text-xs sm:text-sm font-semibold text-slate-100 hover:text-white transition-colors"
-                >
-                  <span className="flex-1">{item.question}</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-blue-400' : ''
-                    }`}
-                  />
-                </button>
-
-                {isOpen && (
-                  <div className="px-4 sm:px-5 pb-5 text-xs text-slate-400 leading-relaxed font-normal border-t border-white/[0.04] pt-3">
-                    {item.answer}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
+        {/* FAQ accordion — Client Component mínimo */}
+        <FaqSection />
       </section>
 
       {/* 8. FOOTER & CHAMADA FINAL */}

@@ -30,37 +30,53 @@ export default function AnimatedCounter({
   const [displayValue, setDisplayValue] = useState(from)
   const [isFlashing, setIsFlashing] = useState(false)
   const currentValRef = useRef(from)
+  const containerRef = useRef<HTMLSpanElement>(null)
+  const hasAnimated = useRef(false)
 
-  // 1. Initial smooth ease-out count up
+  // Start animation only when element enters viewport
   useEffect(() => {
-    let startTimestamp: number | null = null
-    const startValue = from
-    const endValue = to
+    const el = containerRef.current
+    if (!el) return
 
-    const step = (timestamp: number) => {
-      if (!startTimestamp) startTimestamp = timestamp
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1)
-      
-      // Ease out cubic: 1 - Math.pow(1 - progress, 3)
-      const easeOut = 1 - Math.pow(1 - progress, 3)
-      const current = startValue + (endValue - startValue) * easeOut
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry.isIntersecting || hasAnimated.current) return
+        hasAnimated.current = true
+        observer.disconnect()
 
-      currentValRef.current = current
-      setDisplayValue(current)
+        // Ease-out cubic count up
+        let startTimestamp: number | null = null
+        const startValue = from
+        const endValue = to
 
-      if (progress < 1) {
+        const step = (timestamp: number) => {
+          if (!startTimestamp) startTimestamp = timestamp
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1)
+          const easeOut = 1 - Math.pow(1 - progress, 3)
+          const current = startValue + (endValue - startValue) * easeOut
+
+          currentValRef.current = current
+          setDisplayValue(current)
+
+          if (progress < 1) {
+            requestAnimationFrame(step)
+          } else {
+            currentValRef.current = endValue
+            setDisplayValue(endValue)
+          }
+        }
+
         requestAnimationFrame(step)
-      } else {
-        currentValRef.current = endValue
-        setDisplayValue(endValue)
-      }
-    }
+      },
+      { threshold: 0.3 }
+    )
 
-    const animId = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(animId)
+    observer.observe(el)
+    return () => observer.disconnect()
   }, [from, to, duration])
 
-  // 2. Live periodic increment (telemetry simulation)
+  // Live periodic increment (telemetry simulation)
   useEffect(() => {
     if (!enableLiveIncrement) return
 
@@ -76,7 +92,7 @@ export default function AnimatedCounter({
         const nextVal = currentValRef.current + increment
         currentValRef.current = nextVal
         setDisplayValue(nextVal)
-        
+
         setIsFlashing(true)
         setTimeout(() => setIsFlashing(false), 800)
 
@@ -84,7 +100,6 @@ export default function AnimatedCounter({
       }, delay)
     }
 
-    // Start after initial animation finishes
     const initialDelay = setTimeout(() => {
       scheduleNextTick()
     }, duration + 500)
@@ -95,12 +110,21 @@ export default function AnimatedCounter({
     }
   }, [enableLiveIncrement, duration, incrementIntervalMin, incrementIntervalMax])
 
-  const formattedNumber = decimals > 0
-    ? displayValue.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
-    : Math.floor(displayValue).toLocaleString('pt-BR')
+  const formattedNumber =
+    decimals > 0
+      ? displayValue.toLocaleString('pt-BR', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        })
+      : Math.floor(displayValue).toLocaleString('pt-BR')
 
   return (
-    <span className={`inline-flex items-center transition-colors duration-500 ${isFlashing ? 'text-emerald-300' : ''} ${className}`}>
+    <span
+      ref={containerRef}
+      className={`inline-flex items-center transition-colors duration-500 ${
+        isFlashing ? 'text-emerald-300' : ''
+      } ${className}`}
+    >
       {prefix}{formattedNumber}{suffix}
     </span>
   )

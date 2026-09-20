@@ -85,7 +85,7 @@ export function VideoModal({
             controls
             autoPlay
             playsInline
-            preload="auto"
+            preload="none"
             className="w-full h-auto max-h-[75vh] object-contain block"
           >
             <source src={videoSrc} type="video/mp4" />

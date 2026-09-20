@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { Loader2, Zap } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 interface CheckoutButtonProps {
   planId: 'pro' | 'construtora'
@@ -85,10 +85,7 @@ export function CheckoutButton({
             <span>Gerando Pix Seguro...</span>
           </>
         ) : (
-          <>
-            <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            {children}
-          </>
+          <>{children}</>
         )}
       </button>
       {errorMessage && (

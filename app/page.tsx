@@ -17,11 +17,13 @@ import {
   ShieldCheck,
   FileCheck,
   Download,
+  Play,
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import ParticlesComponent from '@/components/ui/particles-bg'
 import { CheckoutButton } from '@/components/CheckoutButton'
+import { VideoModal } from '@/components/VideoModal'
 
 const FAQ_ITEMS = [
   {
@@ -43,10 +45,19 @@ const FAQ_ITEMS = [
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-white relative bg-gradient-to-b from-[#020617] via-[#050b14] via-60% to-[#020617] w-full overflow-x-hidden max-w-full">
       <Navbar />
+
+      {/* Video Modal Popup */}
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        videoSrc="/video_hero_section.mp4"
+        title="Demonstração do DeVici em Ação"
+      />
 
       {/* 1. HERO SECTION (DOBRA PRINCIPAL) */}
       <section className="relative z-10 w-full overflow-hidden flex flex-col justify-center max-w-full">
@@ -89,12 +100,16 @@ export default function LandingPage() {
                 </div>
               </Link>
 
-              <a
-                href="#demonstracao"
-                className="btn-secondary w-full sm:w-auto px-6 py-3.5 text-xs sm:text-sm font-medium flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={() => setIsVideoModalOpen(true)}
+                className="btn-secondary w-full sm:w-auto px-6 py-3.5 text-xs sm:text-sm font-medium flex items-center justify-center gap-2.5 cursor-pointer group"
               >
-                <span>Ver demonstração interativa</span>
-              </a>
+                <div className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-400/40 flex items-center justify-center group-hover:bg-blue-500/30 transition-colors">
+                  <Play className="w-2.5 h-2.5 text-blue-400 fill-blue-400 ml-0.5" />
+                </div>
+                <span>Ver demonstração</span>
+              </button>
             </div>
 
             {/* Micro-copy de Confiança */}

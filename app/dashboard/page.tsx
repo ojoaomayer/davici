@@ -20,6 +20,7 @@ import { collection, query, orderBy, onSnapshot, doc, deleteDoc } from 'firebase
 import { db } from '@/lib/firebase'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
+import { CheckoutButton } from '@/components/CheckoutButton'
 
 export interface OrcamentoDoc {
   id: string
@@ -180,6 +181,14 @@ export default function DashboardPage() {
                 style={{ width: `${isUnlimited ? 100 : usagePercent}%` }}
               />
             </div>
+
+            {!isUnlimited && (
+              <div className="pt-2">
+                <CheckoutButton planId="pro" variant="primary">
+                  Fazer Upgrade (R$ 97)
+                </CheckoutButton>
+              </div>
+            )}
           </div>
 
           <div className="glass-card p-5 rounded-xl space-y-2 blueprint-box">

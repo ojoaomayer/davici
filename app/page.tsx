@@ -21,6 +21,7 @@ import {
 import Navbar from '@/components/Navbar'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import ParticlesComponent from '@/components/ui/particles-bg'
+import { CheckoutButton } from '@/components/CheckoutButton'
 
 const FAQ_ITEMS = [
   {
@@ -452,12 +453,9 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <Link
-              href="/login?mode=signup"
-              className="btn-primary w-full py-2.5 text-xs font-semibold text-center"
-            >
+            <CheckoutButton planId="pro" variant="primary">
               Assinar Plano Profissional
-            </Link>
+            </CheckoutButton>
           </div>
 
           {/* Plano Construtora */}
@@ -497,12 +495,9 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <Link
-              href="/login?mode=signup"
-              className="btn-secondary w-full py-2.5 text-xs font-semibold text-center"
-            >
+            <CheckoutButton planId="construtora" variant="secondary">
               Automatizar meu escritório
-            </Link>
+            </CheckoutButton>
           </div>
         </div>
       </section>

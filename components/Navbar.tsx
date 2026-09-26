@@ -26,7 +26,7 @@ export default function Navbar() {
   const closeMobileMenu = () => setMobileMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-[#020617]/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#020617]/85 backdrop-blur-xl transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand & Nav */}
         <div className="flex items-center gap-10">
@@ -38,7 +38,7 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center gap-6 h-16">
             <Link
               href="/#como-funciona"
-              className="relative h-16 flex items-center text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+              className="relative h-16 flex items-center text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
             >
               Como funciona
             </Link>
@@ -47,8 +47,8 @@ export default function Navbar() {
               href="/ferramentas/calculadora-bdi"
               className={`relative h-16 flex items-center gap-2 text-xs font-medium transition-colors ${
                 isActive('/ferramentas/calculadora-bdi')
-                  ? 'text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-400 after:shadow-[0_0_8px_rgba(96,165,250,0.8)]'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-slate-900 dark:text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-600 dark:after:bg-blue-400 after:shadow-[0_0_8px_rgba(37,99,235,0.4)] dark:after:shadow-[0_0_8px_rgba(96,165,250,0.8)]'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
               }`}
             >
               <Calculator className="w-3.5 h-3.5 opacity-80" />
@@ -59,8 +59,8 @@ export default function Navbar() {
               href="/consultas"
               className={`relative h-16 flex items-center gap-2 text-xs font-medium transition-colors ${
                 isActive('/consultas')
-                  ? 'text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-400 after:shadow-[0_0_8px_rgba(96,165,250,0.8)]'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'text-slate-900 dark:text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-600 dark:after:bg-blue-400 after:shadow-[0_0_8px_rgba(37,99,235,0.4)] dark:after:shadow-[0_0_8px_rgba(96,165,250,0.8)]'
+                  : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
               }`}
             >
               <Search className="w-3.5 h-3.5 opacity-80" />
@@ -69,7 +69,7 @@ export default function Navbar() {
 
             <Link
               href="/#precos"
-              className="relative h-16 flex items-center text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+              className="relative h-16 flex items-center text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
             >
               Planos
             </Link>
@@ -91,14 +91,14 @@ export default function Navbar() {
                   href="/dashboard"
                   className={`relative h-16 flex items-center gap-2 text-xs font-medium transition-colors ${
                     isActive('/dashboard')
-                      ? 'text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-400 after:shadow-[0_0_8px_rgba(96,165,250,0.8)]'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'text-slate-900 dark:text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-600 dark:after:bg-blue-400'
+                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
                   }`}
                 >
                   <LayoutDashboard className="w-3.5 h-3.5 opacity-80" />
                   <span>Workspace</span>
                   {userData?.plano && (
-                    <span className="text-[10px] uppercase font-mono text-slate-400">
+                    <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400">
                       ({userData.plano})
                     </span>
                   )}
@@ -107,7 +107,7 @@ export default function Navbar() {
                 <button
                   onClick={() => logout()}
                   title="Encerrar sessão"
-                  className="p-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                  className="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5 opacity-80" />
                 </button>
@@ -116,7 +116,7 @@ export default function Navbar() {
               <div className="flex items-center gap-4">
                 <Link
                   href="/login"
-                  className="text-xs font-medium text-slate-400 hover:text-white transition-colors"
+                  className="text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                 >
                   Entrar
                 </Link>
@@ -125,7 +125,7 @@ export default function Navbar() {
                   className="btn-primary px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5 group"
                 >
                   <span>Começar agora</span>
-                  <ArrowRight className="w-3 h-3 text-slate-900 group-hover:translate-x-0.5 transition-transform" />
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
             )}
@@ -150,7 +150,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+            className="md:hidden p-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
             aria-label="Abrir menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -160,16 +160,16 @@ export default function Navbar() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/[0.08] bg-[#020617]/95 backdrop-blur-2xl px-4 py-5 space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-            <span className="text-xs text-slate-400 font-mono">Tema Visual</span>
+        <div className="md:hidden border-b border-slate-200/80 dark:border-white/[0.08] bg-white/95 dark:bg-[#020617]/95 backdrop-blur-2xl px-4 py-5 space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/[0.08]">
+            <span className="text-xs text-slate-600 dark:text-slate-400 font-mono">Tema Visual</span>
             <ThemeToggle showLabel />
           </div>
           <nav className="flex flex-col space-y-2 font-mono text-xs">
             <Link
               href="/#como-funciona"
               onClick={closeMobileMenu}
-              className="px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+              className="px-3 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[0.04] transition-colors"
             >
               Como funciona
             </Link>
@@ -179,11 +179,11 @@ export default function Navbar() {
               onClick={closeMobileMenu}
               className={`px-3 py-2.5 rounded-lg flex items-center gap-2.5 transition-colors ${
                 isActive('/ferramentas/calculadora-bdi')
-                  ? 'bg-blue-500/10 text-blue-400 font-semibold'
-                  : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[0.04]'
               }`}
             >
-              <Calculator className="w-4 h-4 text-emerald-400" />
+              <Calculator className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>Calculadora BDI</span>
             </Link>
 
@@ -192,18 +192,18 @@ export default function Navbar() {
               onClick={closeMobileMenu}
               className={`px-3 py-2.5 rounded-lg flex items-center gap-2.5 transition-colors ${
                 isActive('/consultas')
-                  ? 'bg-blue-500/10 text-blue-400 font-semibold'
-                  : 'text-slate-300 hover:text-white hover:bg-white/[0.04]'
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold'
+                  : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[0.04]'
               }`}
             >
-              <Search className="w-4 h-4 text-blue-400" />
+              <Search className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               <span>Buscador SINAPI</span>
             </Link>
 
             <Link
               href="/#precos"
               onClick={closeMobileMenu}
-              className="px-3 py-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/[0.04] transition-colors"
+              className="px-3 py-2.5 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[0.04] transition-colors"
             >
               Planos
             </Link>

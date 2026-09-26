@@ -18,6 +18,7 @@ import ParticlesComponent from '@/components/ui/particles-bg'
 import { CheckoutButton } from '@/components/CheckoutButton'
 import { HeroActions } from '@/components/HeroActions'
 import { FaqSection } from '@/components/FaqSection'
+import { BrandLogo } from '@/components/BrandLogo'
 
 export default function LandingPage() {
   return (
@@ -489,9 +490,12 @@ export default function LandingPage() {
       {/* Footer Navigation */}
       <footer className="relative z-10 border-t border-white/[0.06] py-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-slate-400 font-mono">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 neon-dot-emerald" />
-            <span>DeVici © {new Date().getFullYear()} • Engenharia de Orçamentos Autônoma</span>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="hover:opacity-85 transition-opacity">
+              <BrandLogo className="h-6 sm:h-7 w-auto" />
+            </Link>
+            <span className="text-slate-600 hidden sm:inline">•</span>
+            <span className="text-slate-400">© {new Date().getFullYear()} • Engenharia Autônoma de Custos</span>
           </div>
 
           <div className="flex flex-wrap items-center gap-6 text-slate-400">

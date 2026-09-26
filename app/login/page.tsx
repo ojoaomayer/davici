@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Mail, Lock, User as UserIcon, ArrowRight, AlertCircle, Terminal, ShieldCheck } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import Navbar from '@/components/Navbar'
+import { BrandLogo } from '@/components/BrandLogo'
 
 function LoginForm() {
   const router = useRouter()
@@ -105,13 +106,18 @@ function LoginForm() {
     <div className="animate-scale-in w-full max-w-sm mx-auto">
       <div className="glass-panel rounded-2xl p-7 space-y-6 blueprint-box">
         {/* Header */}
-        <div className="space-y-1 text-center">
-          <h1 className="text-xl font-bold tracking-tight text-white">
-            {isSignUp ? 'Criar Conta' : 'Acesso ao Workspace'}
-          </h1>
-          <p className="text-xs text-slate-400">
-            {isSignUp ? 'Comece com 1 orçamento gratuito' : 'Entre com suas credenciais corporativas'}
-          </p>
+        <div className="space-y-3 text-center flex flex-col items-center">
+          <Link href="/" className="inline-block transition-transform hover:scale-105">
+            <BrandLogo className="h-10 w-auto" priority />
+          </Link>
+          <div className="space-y-1">
+            <h1 className="text-xl font-bold tracking-tight text-white">
+              {isSignUp ? 'Criar Conta' : 'Acesso ao Workspace'}
+            </h1>
+            <p className="text-xs text-slate-400">
+              {isSignUp ? 'Comece com 1 orçamento gratuito' : 'Entre com suas credenciais corporativas'}
+            </p>
+          </div>
         </div>
 
         {/* Tab Selector */}

@@ -14,6 +14,8 @@ import {
   X,
 } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
+import { BrandLogo } from '@/components/BrandLogo'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export default function Navbar() {
   const pathname = usePathname()
@@ -28,10 +30,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand & Nav */}
         <div className="flex items-center gap-10">
-          <Link href="/" className="flex items-center group">
-            <span className="text-lg font-medium tracking-tight text-white group-hover:text-slate-200 transition-colors">
-              DeVici
-            </span>
+          <Link href="/" className="flex items-center group py-1" aria-label="DeVici - Página inicial">
+            <BrandLogo className="h-8 sm:h-9 w-auto" priority />
           </Link>
 
           {/* Desktop Nav with modern underline indicators */}
@@ -78,6 +78,11 @@ export default function Navbar() {
 
         {/* Right CTA / Auth Status & Mobile Menu Button */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Theme Toggle (Desktop) */}
+          <div className="hidden sm:flex items-center">
+            <ThemeToggle />
+          </div>
+
           {/* Desktop Auth (Hidden on small screens where drawer is used) */}
           <div className="hidden md:flex items-center gap-4">
             {user ? (
@@ -102,7 +107,7 @@ export default function Navbar() {
                 <button
                   onClick={() => logout()}
                   title="Encerrar sessão"
-                  className="p-1.5 text-slate-400 hover:text-white transition-colors"
+                  className="p-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5 opacity-80" />
                 </button>
@@ -124,6 +129,11 @@ export default function Navbar() {
                 </Link>
               </div>
             )}
+          </div>
+
+          {/* Mobile Theme Toggle */}
+          <div className="sm:hidden flex items-center">
+            <ThemeToggle />
           </div>
 
           {/* Quick mobile action & hamburger */}
@@ -151,6 +161,10 @@ export default function Navbar() {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-white/[0.08] bg-[#020617]/95 backdrop-blur-2xl px-4 py-5 space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+            <span className="text-xs text-slate-400 font-mono">Tema Visual</span>
+            <ThemeToggle showLabel />
+          </div>
           <nav className="flex flex-col space-y-2 font-mono text-xs">
             <Link
               href="/#como-funciona"

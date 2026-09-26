@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, Fragment } from 'react'
-import { AlertCircle, CheckCircle2, ChevronDown, Check, ArrowRight, Layers, Sparkles } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ChevronDown, Check, ArrowRight, Layers, Sparkles, Database } from 'lucide-react'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -11,12 +11,13 @@ function cn(...inputs: ClassValue[]) {
 
 type ReviewTableProps = {
   results: any[]
-  config: { uf: string; desonerado: boolean }
+  config: { uf: string; desonerado: boolean; modoOrcamento?: 'execucao' | 'projetos' }
   onUpdateMatch: (index: number, newMatch: any) => void
 }
 
 export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTableProps) {
   const [expandedRow, setExpandedRow] = useState<number | null>(null)
+  const isProjetos = config.modoOrcamento === 'projetos'
 
   const getBadgeStyle = (status: string) => {
     switch (status) {
@@ -36,12 +37,40 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
 
   return (
     <div className="w-full glass-panel rounded-xl overflow-hidden blueprint-box">
+      {/* Header Badge Informativo Obrigatório */}
+      <div className="bg-[#0b132b]/90 px-4 py-3 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          {isProjetos ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 shadow-[0_0_12px_rgba(6,182,212,0.18)]">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+              <span>Base de Preços: SECID/PR (Tabela de Serviços Técnicos)</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 shadow-[0_0_12px_rgba(59,130,246,0.18)]">
+              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              <span>Base de Preços: SINAPI (Execução de Obra)</span>
+            </span>
+          )}
+
+          <span className="text-[11px] font-mono text-slate-400 hidden sm:inline">
+            {isProjetos ? 'Resolução SECID nº 094/2026 • Estado do Paraná' : `Referência Oficial SINAPI • Estado: ${config.uf}`}
+          </span>
+        </div>
+
+        <div className="text-[11px] font-mono text-slate-400">
+          Regime:{' '}
+          <strong className="text-slate-200">{config.desonerado ? 'Desonerado' : 'Não Desonerado'}</strong>
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#0b132b]/80 text-slate-400 font-mono text-[11px] uppercase tracking-wider border-b border-white/[0.08]">
               <th className="py-3 px-4 w-[34%]">Item Original (Planilha)</th>
-              <th className="py-3 px-4 w-[36%]">Referência SINAPI Oficial</th>
+              <th className="py-3 px-4 w-[36%]">
+                {isProjetos ? 'Referência SECID/PR Oficial' : 'Referência SINAPI Oficial'}
+              </th>
               <th className="py-3 px-4 text-right">Preço Unit.</th>
               <th className="py-3 px-4 text-right">Preço Total</th>
               <th className="py-3 px-3 text-center">Score</th>
@@ -74,14 +103,16 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
                       </div>
                     </td>
 
-                    {/* Sugestão SINAPI */}
+                    {/* Sugestão SECID/PR ou SINAPI */}
                     <td className="py-3.5 px-4 align-top">
                       {match ? (
                         <div>
                           <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-slate-200 mb-0.5">
-                            <span className="text-blue-400">#{match.codigo}</span>
+                            <span className={isProjetos ? 'text-cyan-400' : 'text-blue-400'}>
+                              #{match.codigo}
+                            </span>
                             <span className="text-[10px] text-slate-400 uppercase font-normal">
-                              • {match.tipo || 'composicao'} • {match.unidade}
+                              • {match.tipo || 'serviço'} • {match.unidade}
                             </span>
                           </div>
                           <div className="text-slate-400 line-clamp-2 leading-relaxed text-[11px]">
@@ -119,7 +150,7 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
                     <td className="py-3.5 px-3 text-right align-top">
                       <button
                         onClick={() => setExpandedRow(isExpanded ? null : idx)}
-                        className="p-1.5 text-slate-400 hover:text-white hover:bg-white/[0.06] rounded-md transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-white hover:bg-white/[0.06] rounded-md transition-colors cursor-pointer"
                         title="Ver justificativa técnica e candidatos alternativos"
                       >
                         <ChevronDown className={cn('w-4 h-4 transition-transform duration-200', isExpanded && 'rotate-180')} />
@@ -134,19 +165,26 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                           {/* Technical Justification */}
                           <div className="lg:col-span-4 bg-[#0b132b]/50 p-4 rounded-xl border border-white/[0.08] space-y-2">
-                            <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
-                              <Sparkles className="w-3 h-3 text-blue-400" />
+                            <div
+                              className={cn(
+                                'text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1.5',
+                                isProjetos ? 'text-cyan-400' : 'text-blue-400'
+                              )}
+                            >
+                              <Sparkles className="w-3 h-3" />
                               <span>Justificativa Técnica</span>
                             </div>
                             <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                              {judgment?.justificativa || match?.justificativa || 'Correspondência estabelecida por análise vetorial e proximidade semântica de termos técnicos.'}
+                              {judgment?.justificativa ||
+                                match?.justificativa ||
+                                'Correspondência estabelecida por análise semântica e proximidade de escopo técnico.'}
                             </p>
                           </div>
 
                           {/* Alternative Candidates */}
                           <div className="lg:col-span-8 space-y-2">
                             <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
-                              Outras Opções na Base SINAPI ({candidates?.length || 0})
+                              Outras Opções na Base {isProjetos ? 'SECID/PR' : 'SINAPI'} ({candidates?.length || 0})
                             </div>
 
                             <div className="space-y-2">
@@ -160,7 +198,9 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
                                     className={cn(
                                       'flex items-center justify-between p-3 rounded-xl border text-xs transition-colors',
                                       isCurrent
-                                        ? 'border-blue-500/50 bg-blue-950/30 text-white'
+                                        ? isProjetos
+                                          ? 'border-cyan-400/50 bg-cyan-950/30 text-white'
+                                          : 'border-blue-500/50 bg-blue-950/30 text-white'
                                         : 'bg-[#0b132b]/30 border-white/[0.06] hover:border-white/20 text-slate-400'
                                     )}
                                   >
@@ -169,7 +209,12 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
                                         <span className="font-bold text-white">#{cand.codigo}</span>
                                         <span className="text-slate-400">• {cand.unidade}</span>
                                         {cand.match_score && (
-                                          <span className="text-[10px] text-blue-400 font-mono">
+                                          <span
+                                            className={cn(
+                                              'text-[10px] font-mono',
+                                              isProjetos ? 'text-cyan-400' : 'text-blue-400'
+                                            )}
+                                          >
                                             ({cand.match_score}% similaridade)
                                           </span>
                                         )}
@@ -187,9 +232,11 @@ export default function ReviewTable({ results, config, onUpdateMatch }: ReviewTa
                                         onClick={() => onUpdateMatch(idx, cand)}
                                         disabled={isCurrent}
                                         className={cn(
-                                          'px-3 py-1.5 text-[11px] font-medium rounded-full transition-all',
+                                          'px-3 py-1.5 text-[11px] font-medium rounded-full transition-all cursor-pointer',
                                           isCurrent
-                                            ? 'bg-blue-500 text-slate-950 font-semibold cursor-default'
+                                            ? isProjetos
+                                              ? 'bg-cyan-400 text-slate-950 font-semibold cursor-default'
+                                              : 'bg-blue-500 text-slate-950 font-semibold cursor-default'
                                             : 'bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/10'
                                         )}
                                       >

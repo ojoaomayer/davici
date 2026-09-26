@@ -1,6 +1,6 @@
 // Server Component — sem 'use client', sem useState, sem hooks
 // Toda a interatividade foi movida para Client Components mínimos:
-//   HeroActions.tsx → botões do hero + VideoModal
+//   HeroActions.tsx → botões de ação do hero
 //   FaqSection.tsx  → accordion do FAQ
 //   CheckoutButton  → botões de checkout dos planos pagos
 
@@ -51,7 +51,7 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* CTAs — Client Component mínimo (VideoModal + botões) */}
+          {/* CTAs — Client Component com seleção direta de escopo */}
           <HeroActions />
 
           {/* Demonstration Card (Preview Interativo) */}

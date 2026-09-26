@@ -44,6 +44,7 @@ next-env.d.ts
 # large data files — seed locally, don't commit to repo
 sinapi_ref.xlsx
 *.xlsx
+*.xlsm
 
 # scratch / test scripts
 test-*.js

@@ -1,19 +1,46 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronRight, RotateCcw, FileSpreadsheet, ArrowLeft, ArrowRight } from 'lucide-react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { ChevronRight, RotateCcw, FileSpreadsheet, ArrowLeft, ArrowRight, Compass, HardHat } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Dropzone from '@/components/Dropzone'
 import ReviewTable from '@/components/ReviewTable'
 import ExportSection from '@/components/ExportSection'
+import type { ModoOrcamento } from '@/components/ScopeSelector'
 
-export default function OrcamentoPage() {
+function OrcamentoContent() {
+  const searchParams = useSearchParams()
+  const initialModoParam = searchParams.get('modo') as ModoOrcamento | null
+  const defaultModo: ModoOrcamento = initialModoParam === 'projetos' ? 'projetos' : 'execucao'
+
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState<any[]>([])
-  const [config, setConfig] = useState({ uf: 'PR', desonerado: false })
+  const [config, setConfig] = useState<{
+    uf: string
+    desonerado: boolean
+    modoOrcamento: ModoOrcamento
+  }>({
+    uf: defaultModo === 'projetos' ? 'PR' : 'PR',
+    desonerado: false,
+    modoOrcamento: defaultModo,
+  })
 
-  const handleProcess = async (data: any[], runConfig: { uf: string; desonerado: boolean }) => {
+  useEffect(() => {
+    if (initialModoParam === 'projetos' || initialModoParam === 'execucao') {
+      setConfig((prev) => ({
+        ...prev,
+        modoOrcamento: initialModoParam,
+        uf: initialModoParam === 'projetos' ? 'PR' : prev.uf,
+      }))
+    }
+  }, [initialModoParam])
+
+  const handleProcess = async (
+    data: any[],
+    runConfig: { uf: string; desonerado: boolean; modoOrcamento: ModoOrcamento }
+  ) => {
     setIsLoading(true)
     setConfig(runConfig)
 
@@ -21,7 +48,12 @@ export default function OrcamentoPage() {
       const response = await fetch('/api/match', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: data, filter_uf: runConfig.uf, desonerado: runConfig.desonerado }),
+        body: JSON.stringify({
+          items: data,
+          filter_uf: runConfig.uf,
+          desonerado: runConfig.desonerado,
+          modoOrcamento: runConfig.modoOrcamento,
+        }),
       })
 
       const json = await response.json()
@@ -50,6 +82,8 @@ export default function OrcamentoPage() {
     setResults(newResults)
   }
 
+  const isProjetos = config.modoOrcamento === 'projetos'
+
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white flex flex-col relative overflow-hidden">
       {/* Background Cinematographic Lighting & Blueprint Grid */}
@@ -63,13 +97,29 @@ export default function OrcamentoPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/[0.08] pb-6">
           <div>
             <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400 mb-1.5 uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-              <span>Módulo Executivo</span>
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isProjetos ? 'bg-cyan-400 neon-dot-blue' : 'bg-blue-400 neon-dot-blue'
+                }`}
+              />
+              <span>{isProjetos ? 'Módulo de Projetos & Serviços Técnicos' : 'Módulo Executivo'}</span>
               <span className="text-white/20">•</span>
-              <span className="text-blue-400">SINAPI 08/2026</span>
+              <span className={isProjetos ? 'text-cyan-400' : 'text-blue-400'}>
+                {isProjetos ? 'SECID/PR (Res. 094/2026)' : 'SINAPI Oficial'}
+              </span>
             </div>
             <h1 className="text-2xl font-light tracking-tight text-white">
-              Orçamento de Obras & <span className="font-semibold text-blue-300">Conciliação Oficial</span>
+              {isProjetos ? (
+                <>
+                  Orçamento de Projetos &amp;{' '}
+                  <span className="font-semibold text-cyan-300">Serviços Técnicos</span>
+                </>
+              ) : (
+                <>
+                  Orçamento de Obras &amp;{' '}
+                  <span className="font-semibold text-blue-300">Conciliação Oficial</span>
+                </>
+              )}
             </h1>
           </div>
 
@@ -78,7 +128,9 @@ export default function OrcamentoPage() {
             <div
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
                 step === 1
-                  ? 'bg-blue-500/10 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.2)]'
+                  ? isProjetos
+                    ? 'bg-cyan-500/10 border-cyan-400/40 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]'
+                    : 'bg-blue-500/10 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.2)]'
                   : 'bg-white/[0.03] border-white/10 text-slate-500'
               }`}
             >
@@ -90,7 +142,9 @@ export default function OrcamentoPage() {
             <div
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
                 step === 2
-                  ? 'bg-blue-500/10 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.2)]'
+                  ? isProjetos
+                    ? 'bg-cyan-500/10 border-cyan-400/40 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]'
+                    : 'bg-blue-500/10 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.2)]'
                   : 'bg-white/[0.03] border-white/10 text-slate-500'
               }`}
             >
@@ -102,7 +156,9 @@ export default function OrcamentoPage() {
             <div
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all ${
                 step === 3
-                  ? 'bg-blue-500/10 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.2)]'
+                  ? isProjetos
+                    ? 'bg-cyan-500/10 border-cyan-400/40 text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.2)]'
+                    : 'bg-blue-500/10 border-blue-500/40 text-blue-300 shadow-[0_0_12px_rgba(59,130,246,0.2)]'
                   : 'bg-white/[0.03] border-white/10 text-slate-500'
               }`}
             >
@@ -114,7 +170,18 @@ export default function OrcamentoPage() {
         {/* Step 1: Upload */}
         {step === 1 && (
           <div className="space-y-4 py-4 animate-fade-in">
-            <Dropzone onProcess={handleProcess} isLoading={isLoading} />
+            <Dropzone
+              onProcess={handleProcess}
+              isLoading={isLoading}
+              initialModo={config.modoOrcamento}
+              onModoChange={(novoModo) =>
+                setConfig((prev) => ({
+                  ...prev,
+                  modoOrcamento: novoModo,
+                  uf: novoModo === 'projetos' ? 'PR' : prev.uf,
+                }))
+              }
+            />
           </div>
         )}
 
@@ -123,20 +190,27 @@ export default function OrcamentoPage() {
           <div className="space-y-6 animate-fade-in">
             {/* Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-4 glass-card p-3.5 rounded-xl text-xs">
-              <div className="font-mono text-slate-400">
-                <strong className="text-white font-bold">{results.length}</strong> itens processados • Base <strong className="text-blue-400 font-bold">{config.uf}</strong> ({config.desonerado ? 'Desonerado' : 'Não Desonerado'})
+              <div className="font-mono text-slate-400 flex items-center gap-2 flex-wrap">
+                <strong className="text-white font-bold">{results.length}</strong> itens processados • Base{' '}
+                <strong className={isProjetos ? 'text-cyan-400 font-bold' : 'text-blue-400 font-bold'}>
+                  {isProjetos ? 'SECID/PR' : `SINAPI ${config.uf}`}
+                </strong>{' '}
+                ({config.desonerado ? 'Desonerado' : 'Não Desonerado'})
               </div>
 
               <div className="flex items-center gap-2.5">
                 <button
-                  onClick={() => { setStep(1); setResults([]); }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-slate-400 hover:text-white text-xs transition-colors"
+                  onClick={() => {
+                    setStep(1)
+                    setResults([])
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.04] text-slate-400 hover:text-white text-xs transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" /> Reiniciar
                 </button>
                 <button
                   onClick={() => setStep(3)}
-                  className="btn-primary px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5"
+                  className="btn-primary px-4 py-1.5 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>Avançar para Exportação</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -149,14 +223,14 @@ export default function OrcamentoPage() {
             <div className="flex justify-between items-center pt-2">
               <button
                 onClick={() => setStep(1)}
-                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-mono transition-colors"
+                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white font-mono transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> Voltar ao Upload
               </button>
 
               <button
                 onClick={() => setStep(3)}
-                className="btn-primary px-5 py-2 text-xs font-semibold flex items-center gap-2"
+                className="btn-primary px-5 py-2 text-xs font-semibold flex items-center gap-2 cursor-pointer"
               >
                 <span>Concluir Orçamento</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -173,14 +247,17 @@ export default function OrcamentoPage() {
             <div className="flex justify-between items-center text-xs font-mono pt-2">
               <button
                 onClick={() => setStep(2)}
-                className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 <ArrowLeft className="w-3.5 h-3.5" /> Revisar Itens Novamente
               </button>
 
               <button
-                onClick={() => { setStep(1); setResults([]); }}
-                className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors"
+                onClick={() => {
+                  setStep(1)
+                  setResults([])
+                }}
+                className="flex items-center gap-1.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Novo Orçamento
               </button>
@@ -189,5 +266,19 @@ export default function OrcamentoPage() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function OrcamentoPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#020617] flex items-center justify-center text-slate-400 font-mono text-xs">
+          Carregando módulo de orçamento...
+        </div>
+      }
+    >
+      <OrcamentoContent />
+    </Suspense>
   )
 }

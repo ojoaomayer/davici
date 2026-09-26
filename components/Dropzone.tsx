@@ -2,17 +2,20 @@
 
 import { useState } from 'react'
 import * as xlsx from 'xlsx'
-import { UploadCloud, FileSpreadsheet, Settings, Hash, Tag, Layers, RefreshCw, FileText, ShieldCheck, Database, Zap, CheckCircle2 } from 'lucide-react'
+import { UploadCloud, FileSpreadsheet, Settings, Hash, Tag, Layers, RefreshCw, FileText, ShieldCheck, Database, Zap, CheckCircle2, Lock } from 'lucide-react'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import ScopeSelector, { type ModoOrcamento } from './ScopeSelector'
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 type DropzoneProps = {
-  onProcess: (data: any[], config: { uf: string; desonerado: boolean }) => void
+  onProcess: (data: any[], config: { uf: string; desonerado: boolean; modoOrcamento: ModoOrcamento }) => void
   isLoading: boolean
+  initialModo?: ModoOrcamento
+  onModoChange?: (modo: ModoOrcamento) => void
 }
 
 interface ParsedSheetInfo {
@@ -97,13 +100,13 @@ function autoSelectColumns(cols: string[]) {
   let name = ''
 
   for (const c of normCols) {
-    if (c.norm.includes('descricao do servico') || c.norm.includes('descricao do insumo') || c.norm.includes('discriminacao')) {
+    if (c.norm.includes('descricao do servico') || c.norm.includes('descricao do insumo') || c.norm.includes('discriminacao') || c.norm.includes('descricao do projeto')) {
       desc = c.original; break
     }
   }
   if (!desc) {
     for (const c of normCols) {
-      if (c.norm.includes('descricao') || c.norm.includes('servico') || c.norm.includes('especificacao')) {
+      if (c.norm.includes('descricao') || c.norm.includes('servico') || c.norm.includes('projeto') || c.norm.includes('disciplina') || c.norm.includes('especificacao')) {
         desc = c.original; break
       }
     }
@@ -130,13 +133,20 @@ function autoSelectColumns(cols: string[]) {
   }
 
   for (const c of normCols) {
-    if (c.norm.includes('codigo do servico') || c.norm.includes('codigo do insumo') || c.norm.includes('codigo sinapi') || c.norm.includes('cod. sinapi')) {
+    if (
+      c.norm.includes('codigo do servico') ||
+      c.norm.includes('codigo do insumo') ||
+      c.norm.includes('codigo sinapi') ||
+      c.norm.includes('cod. sinapi') ||
+      c.norm.includes('codigo secid') ||
+      c.norm.includes('item resolucao')
+    ) {
       code = c.original; break
     }
   }
   if (!code) {
     for (const c of normCols) {
-      if (c.norm === 'codigo' || c.norm === 'cod' || c.norm.includes('codigo') || c.norm.includes('sinapi')) {
+      if (c.norm === 'codigo' || c.norm === 'cod' || c.norm.includes('codigo') || c.norm.includes('sinapi') || c.norm.includes('secid')) {
         code = c.original; break
       }
     }
@@ -156,7 +166,7 @@ function autoSelectColumns(cols: string[]) {
   }
 
   for (const c of normCols) {
-    if (c.norm.includes('nome') || c.norm.includes('subitem') || c.norm.includes('titulo')) {
+    if (c.norm.includes('nome') || c.norm.includes('subitem') || c.norm.includes('titulo') || c.norm.includes('etapa')) {
       name = c.original; break
     }
   }
@@ -164,7 +174,8 @@ function autoSelectColumns(cols: string[]) {
   return { desc, qtd, code, unid, name }
 }
 
-export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
+export default function Dropzone({ onProcess, isLoading, initialModo = 'execucao', onModoChange }: DropzoneProps) {
+  const [modoOrcamento, setModoOrcamento] = useState<ModoOrcamento>(initialModo)
   const [dragActive, setDragActive] = useState(false)
   
   const [workbook, setWorkbook] = useState<xlsx.WorkBook | null>(null)
@@ -181,8 +192,16 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
   const [qtdCol, setQtdCol] = useState<string>('')
   const [unidCol, setUnidCol] = useState<string>('')
   
-  const [uf, setUf] = useState<string>('PR')
+  const [uf, setUf] = useState<string>(initialModo === 'projetos' ? 'PR' : 'PR')
   const [desonerado, setDesonerado] = useState<boolean>(false)
+
+  const handleModoChange = (newModo: ModoOrcamento) => {
+    setModoOrcamento(newModo)
+    if (newModo === 'projetos') {
+      setUf('PR')
+    }
+    if (onModoChange) onModoChange(newModo)
+  }
 
   const loadSheet = (wb: xlsx.WorkBook, sheetName: string) => {
     const ws = wb.Sheets[sheetName]
@@ -282,18 +301,31 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
       return
     }
 
-    onProcess(mappedData, { uf, desonerado })
+    onProcess(mappedData, {
+      uf: modoOrcamento === 'projetos' ? 'PR' : uf,
+      desonerado,
+      modoOrcamento,
+    })
   }
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
+      {/* 1. Seletor de Escopo Interativo */}
+      <ScopeSelector
+        value={modoOrcamento}
+        onChange={handleModoChange}
+        disabled={isLoading}
+      />
+
       {!fileData.length && !workbook ? (
         <div className="space-y-4">
           <div
             className={cn(
               "relative flex flex-col items-center justify-center p-12 sm:p-16 rounded-2xl transition-all duration-300 glass-panel blueprint-box overflow-hidden",
               dragActive
-                ? "border-blue-500 bg-blue-950/20 shadow-[0_0_30px_rgba(59,130,246,0.25)]"
+                ? modoOrcamento === 'projetos'
+                  ? "border-cyan-500 bg-cyan-950/20 shadow-[0_0_30px_rgba(6,182,212,0.25)]"
+                  : "border-blue-500 bg-blue-950/20 shadow-[0_0_30px_rgba(59,130,246,0.25)]"
                 : "hover:border-white/20 hover:bg-slate-900/50"
             )}
             onDragEnter={onDrag}
@@ -304,11 +336,22 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
             {/* Background Glow */}
             <div className="absolute inset-0 bg-radial-subtle pointer-events-none opacity-40" />
 
-            <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-b from-blue-500/20 to-blue-950/40 border border-blue-500/30 flex items-center justify-center text-blue-400 mb-4 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-              <UploadCloud className="w-7 h-7 text-blue-400" />
+            <div
+              className={cn(
+                "relative w-14 h-14 rounded-2xl border flex items-center justify-center mb-4 transition-all",
+                modoOrcamento === 'projetos'
+                  ? "bg-gradient-to-b from-cyan-500/20 to-cyan-950/40 border-cyan-500/30 text-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.2)]"
+                  : "bg-gradient-to-b from-blue-500/20 to-blue-950/40 border-blue-500/30 text-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.2)]"
+              )}
+            >
+              <UploadCloud className="w-7 h-7" />
             </div>
 
-            <h3 className="text-base font-semibold text-white tracking-tight">Importar Planilha de Orçamento</h3>
+            <h3 className="text-base font-semibold text-white tracking-tight">
+              {modoOrcamento === 'projetos'
+                ? 'Importar Planilha de Projetos & Serviços Técnicos'
+                : 'Importar Planilha de Execução de Obras'}
+            </h3>
             <p className="text-xs text-slate-400 mt-1 mb-6 text-center max-w-md">
               Arraste seu arquivo ou selecione do computador. Compatível com formatos <span className="text-slate-300 font-mono">.xlsx, .xlsm, .xls</span> e <span className="text-slate-300 font-mono">.csv</span>.
             </p>
@@ -328,12 +371,17 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
           {/* Micro-indicators */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-[11px] text-slate-400">
             <div className="glass-card p-3 rounded-lg flex items-center gap-2.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-              <span>Base SINAPI Sincronizada</span>
+              <span
+                className={cn(
+                  "w-1.5 h-1.5 rounded-full",
+                  modoOrcamento === 'projetos' ? "bg-cyan-400 neon-dot-blue" : "bg-blue-400 neon-dot-blue"
+                )}
+              />
+              <span>{modoOrcamento === 'projetos' ? 'Base SECID/PR Sincronizada' : 'Base SINAPI Sincronizada'}</span>
             </div>
             <div className="glass-card p-3 rounded-lg flex items-center gap-2.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 neon-dot-emerald" />
-              <span>Processamento Vetorial Local</span>
+              <span>{modoOrcamento === 'projetos' ? 'Resolução SECID nº 094/2026' : 'Processamento Vetorial Local'}</span>
             </div>
             <div className="glass-card p-3 rounded-lg flex items-center gap-2.5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 neon-dot-blue" />
@@ -457,30 +505,45 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
           {/* Regional Settings Bar */}
           <div className="bg-[#0b132b]/50 border border-white/[0.08] p-4 rounded-xl flex flex-wrap gap-4 items-center justify-between text-xs">
             <div className="flex items-center gap-2 text-slate-300 font-medium">
-              <Settings className="w-4 h-4 text-blue-400" />
-              <span>Parâmetros Regionais SINAPI:</span>
+              <Settings className={cn("w-4 h-4", modoOrcamento === 'projetos' ? "text-cyan-400" : "text-blue-400")} />
+              <span>
+                {modoOrcamento === 'projetos'
+                  ? 'Parâmetros Oficiais SECID/PR (Res. 094/2026):'
+                  : 'Parâmetros Regionais SINAPI:'}
+              </span>
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400 font-mono">Estado:</span>
-                <select 
-                  value={uf} onChange={e => setUf(e.target.value)}
-                  className="p-1.5 rounded-lg bg-[#030712] border border-white/15 text-white font-mono font-bold text-xs focus:outline-none"
-                >
-                  <option value="PR">PR</option>
-                  <option value="SP">SP</option>
-                  <option value="RJ">RJ</option>
-                  <option value="SC">SC</option>
-                  <option value="MG">MG</option>
-                  <option value="RS">RS</option>
-                  <option value="BA">BA</option>
-                  <option value="DF">DF</option>
-                  <option value="GO">GO</option>
-                  <option value="PE">PE</option>
-                  <option value="CE">CE</option>
-                </select>
-              </div>
+              {modoOrcamento === 'projetos' ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400 font-mono">Estado:</span>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 font-mono font-bold text-xs shadow-[0_0_10px_rgba(6,182,212,0.15)]">
+                    <Lock className="w-3 h-3 text-cyan-400" />
+                    <span>PR (Paraná)</span>
+                  </div>
+                  <span className="text-[10px] text-cyan-400/80 font-mono hidden sm:inline">• Base Estadual Fixada</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-slate-400 font-mono">Estado:</span>
+                  <select 
+                    value={uf} onChange={e => setUf(e.target.value)}
+                    className="p-1.5 rounded-lg bg-[#030712] border border-white/15 text-white font-mono font-bold text-xs focus:outline-none"
+                  >
+                    <option value="PR">PR</option>
+                    <option value="SP">SP</option>
+                    <option value="RJ">RJ</option>
+                    <option value="SC">SC</option>
+                    <option value="MG">MG</option>
+                    <option value="RS">RS</option>
+                    <option value="BA">BA</option>
+                    <option value="DF">DF</option>
+                    <option value="GO">GO</option>
+                    <option value="PE">PE</option>
+                    <option value="CE">CE</option>
+                  </select>
+                </div>
+              )}
 
               <div className="flex items-center gap-2">
                 <span className="text-slate-400 font-mono">Regime:</span>
@@ -518,11 +581,15 @@ export default function Dropzone({ onProcess, isLoading }: DropzoneProps) {
               {isLoading ? (
                 <>
                   <div className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
-                  <span>Cruzando com SINAPI...</span>
+                  <span>
+                    {modoOrcamento === 'projetos' ? 'Cruzando com SECID/PR...' : 'Cruzando com SINAPI...'}
+                  </span>
                 </>
               ) : (
                 <>
-                  <span>Executar Orçamento</span>
+                  <span>
+                    {modoOrcamento === 'projetos' ? 'Executar Orçamento de Projetos' : 'Executar Orçamento'}
+                  </span>
                   <Zap className="w-3.5 h-3.5 text-slate-950 fill-current" />
                 </>
               )}

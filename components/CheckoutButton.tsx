@@ -41,7 +41,7 @@ export function CheckoutButton({
     setLoading(true)
 
     try {
-      const res = await fetch('/api/checkout/abacatepay', {
+      const res = await fetch('/api/checkout/stripe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -55,14 +55,14 @@ export function CheckoutButton({
       const data = await res.json()
 
       if (!res.ok || !data.url) {
-        throw new Error(data.error || 'Não foi possível gerar a cobrança no momento.')
+        throw new Error(data.error || 'Não foi possível iniciar o checkout no momento.')
       }
 
-      // Redireciona para o checkout do AbacatePay
+      // Redireciona para o checkout seguro do Stripe
       window.location.href = data.url
     } catch (err: any) {
-      console.error('Erro ao iniciar checkout:', err)
-      setErrorMessage(err.message || 'Erro ao conectar ao checkout.')
+      console.error('Erro ao iniciar checkout Stripe:', err)
+      setErrorMessage(err.message || 'Erro ao conectar ao Stripe.')
       setLoading(false)
     }
   }
@@ -82,7 +82,7 @@ export function CheckoutButton({
         {loading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
-            <span>Gerando Pix Seguro...</span>
+            <span>Iniciando Checkout Seguro...</span>
           </>
         ) : (
           <>{children}</>

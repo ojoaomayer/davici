@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAbacateBilling, PLANS } from '@/lib/abacatepay';
+import { createStripeCheckoutSession, PLANS } from '@/lib/stripe';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { planId, userId, userEmail, userName, userCpfCnpj, userPhone } = body;
+    const { planId, userId, userEmail, userName } = body;
 
     if (!planId || !userId || !userEmail) {
       return NextResponse.json(
@@ -20,31 +20,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Obter URL base da aplicação
+    // Identificar origem do frontend
     const origin = req.headers.get('origin') || req.headers.get('host') || 'http://localhost:3000';
     const baseUrl = origin.startsWith('http') ? origin : `https://${origin}`;
 
-    const { url, billingId } = await createAbacateBilling({
+    const { url, sessionId } = await createStripeCheckoutSession({
       planId,
       userId,
       userEmail,
       userName,
-      userCpfCnpj,
-      userPhone,
       baseUrl,
     });
 
     return NextResponse.json({
       success: true,
       url,
-      billingId,
+      sessionId,
       plan: PLANS[planId as 'pro' | 'construtora'],
     });
   } catch (error: any) {
-    console.error('Erro ao gerar checkout AbacatePay:', error);
+    console.error('Erro ao gerar checkout Stripe:', error);
     return NextResponse.json(
       {
-        error: error.message || 'Erro ao comunicar com o gateway AbacatePay.',
+        error: error.message || 'Erro ao comunicar com o Stripe Checkout.',
       },
       { status: 500 }
     );

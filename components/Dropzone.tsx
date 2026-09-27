@@ -24,8 +24,7 @@ interface ParsedSheetInfo {
   rows: any[]
 }
 
-function analyzeSheetData(worksheet: xlsx.WorkSheet): ParsedSheetInfo {
-  const rawGrid = xlsx.utils.sheet_to_json(worksheet, { header: 1 }) as any[][]
+function analyzeGridData(rawGrid: any[][]): ParsedSheetInfo {
   if (!rawGrid || rawGrid.length === 0) return { headerRowIndex: 0, columns: [], rows: [] }
 
   let bestRowIdx = 0
@@ -207,7 +206,8 @@ export default function Dropzone({ onProcess, isLoading, initialModo = 'execucao
     const ws = wb.Sheets[sheetName]
     if (!ws) return
 
-    const { headerRowIndex, columns: cols, rows } = analyzeSheetData(ws)
+    const rawGrid = xlsx.utils.sheet_to_json(ws, { header: 1 }) as any[][]
+    const { headerRowIndex, columns: cols, rows } = analyzeGridData(rawGrid)
     setColumns(cols)
     setFileData(rows)
     setHeaderRow(headerRowIndex + 1)
@@ -221,7 +221,49 @@ export default function Dropzone({ onProcess, isLoading, initialModo = 'execucao
     setUnidCol(auto.unid)
   }
 
-  const handleFile = (file: File) => {
+  const handleFile = async (file: File) => {
+    const isPdf = file.name.toLowerCase().endsWith('.pdf')
+
+    if (isPdf) {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const res = await fetch('/api/parse-pdf', {
+          method: 'POST',
+          body: formData,
+        })
+        const data = await res.json()
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Erro ao processar PDF')
+        }
+
+        const { grid } = data
+        if (!grid || grid.length === 0) {
+          throw new Error('Nenhum dado encontrado no PDF')
+        }
+
+        const { headerRowIndex, columns: cols, rows } = analyzeGridData(grid)
+        setColumns(cols)
+        setFileData(rows)
+        setHeaderRow(headerRowIndex + 1)
+        setSelectedSheet('PDF_Importado')
+        setSheetNames(['PDF_Importado'])
+        
+        const auto = autoSelectColumns(cols)
+        setDescCol(auto.desc)
+        setCodeCol(auto.code)
+        setNameCol(auto.name)
+        setQtdCol(auto.qtd)
+        setUnidCol(auto.unid)
+      } catch (err: any) {
+        console.error(err)
+        alert(err.message || 'Erro ao importar PDF.')
+      }
+      return
+    }
+
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
@@ -353,7 +395,7 @@ export default function Dropzone({ onProcess, isLoading, initialModo = 'execucao
                 : 'Importar Planilha de Execução de Obras'}
             </h3>
             <p className="text-xs text-slate-400 mt-1 mb-6 text-center max-w-md">
-              Arraste seu arquivo ou selecione do computador. Compatível com formatos <span className="text-slate-300 font-mono">.xlsx, .xlsm, .xls</span> e <span className="text-slate-300 font-mono">.csv</span>.
+              Arraste seu arquivo ou selecione do computador. Compatível com <span className="text-slate-300 font-mono">.pdf, .xlsx, .xls</span> e <span className="text-slate-300 font-mono">.csv</span>.
             </p>
 
             <label className="cursor-pointer btn-primary px-6 py-2.5 text-xs font-semibold shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center gap-2">
@@ -362,7 +404,7 @@ export default function Dropzone({ onProcess, isLoading, initialModo = 'execucao
               <input 
                 type="file" 
                 className="hidden" 
-                accept=".xlsx,.xls,.xlsm,.csv,.ods" 
+                accept=".pdf,.xlsx,.xls,.xlsm,.csv,.ods" 
                 onChange={(e) => e.target.files && handleFile(e.target.files[0])}
               />
             </label>

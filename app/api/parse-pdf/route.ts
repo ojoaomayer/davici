@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+// Instanciar o cliente Gemini (garanta que a chave esteja no .env)
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(req: NextRequest) {
   try {
-    // Importação dinâmica para evitar erro de 'DOMMatrix is not defined' no build do Vercel
-    const pdfParse = require('pdf-parse');
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 
@@ -11,48 +13,62 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Nenhum arquivo enviado.' }, { status: 400 });
     }
 
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error('Chave de API do Gemini não configurada (GEMINI_API_KEY).');
+    }
+
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const base64Data = Buffer.from(arrayBuffer).toString('base64');
 
-    // Parse the PDF
-    const data = await pdfParse(buffer);
+    // Usar o modelo Flash que é ultrarrápido, barato e suporta PDFs/Imagens nativamente
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const prompt = `
+    Você é um extrator de dados de orçamentos e planilhas de engenharia.
+    Eu estou enviando um arquivo PDF (que pode ser escaneado ou digital) contendo uma tabela de orçamento.
     
-    // Split text by newlines
-    const rawLines = data.text.split(/\r?\n/);
+    SUA TAREFA:
+    Extraia a tabela completa e retorne **EXATAMENTE e APENAS** um JSON válido contendo um array bidimensional (array de arrays).
+    - O primeiro array interno deve conter os cabeçalhos das colunas (ex: ["Item", "Código", "Descrição", "Und", "Qtd"]).
+    - Os arrays subsequentes devem conter os valores das linhas correspondentes.
+    - Se a tabela estiver dividida em várias páginas, unifique tudo em um único array bidimensional contínuo.
+    - Não inclua NENHUM texto antes ou depois do JSON. Não use blocos de código markdown (como \`\`\`json). Retorne apenas o JSON bruto que pode ser parseado com JSON.parse().
+    - Trate arquivos escaneados fazendo OCR preciso de todas as colunas visíveis.
+    `;
+
+    const result = await model.generateContent([
+      {
+        inlineData: {
+          data: base64Data,
+          mimeType: 'application/pdf',
+        },
+      },
+      prompt,
+    ]);
+
+    const responseText = result.response.text().trim();
     
-    // Try to construct a grid (array of arrays)
-    const grid: string[][] = [];
+    // Limpar possíveis resquícios de markdown caso a IA coloque
+    let cleanJsonStr = responseText;
+    if (cleanJsonStr.startsWith('```')) {
+      cleanJsonStr = cleanJsonStr.replace(/^```json/i, '').replace(/^```/, '').replace(/```$/, '').trim();
+    }
 
-    for (const line of rawLines) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
+    const grid = JSON.parse(cleanJsonStr);
 
-      // Split by 2 or more spaces, or tabs, to simulate columns in a table.
-      // PDFs usually don't have tab characters, but multiple spaces visually separate columns.
-      const columns = trimmed.split(/\s{2,}|\t/);
-      
-      // If splitting by multiple spaces didn't yield columns, fallback to single space
-      // but only if it looks like a row that should have columns (e.g. starts with a number/code)
-      if (columns.length === 1) {
-        // Simple fallback: just put the whole line in one column. 
-        // The user will map this to description, but might miss quantities.
-        grid.push([trimmed]);
-      } else {
-        grid.push(columns.map((c: string) => c.trim()));
-      }
+    if (!Array.isArray(grid)) {
+      throw new Error('A IA não retornou um array válido.');
     }
 
     return NextResponse.json({
       success: true,
       grid,
-      textLength: data.text.length,
-      pages: data.numpages
     });
 
   } catch (error: any) {
-    console.error('Erro ao processar PDF:', error);
+    console.error('Erro ao processar PDF via Gemini:', error);
     return NextResponse.json(
-      { error: 'Falha ao ler o arquivo PDF. O arquivo pode estar corrompido ou protegido.' },
+      { error: 'Falha ao ler o arquivo PDF. Tente enviar uma imagem mais nítida ou um formato suportado.' },
       { status: 500 }
     );
   }

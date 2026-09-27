@@ -374,8 +374,11 @@ export default function LandingPage() {
               </div>
 
               <div className="py-2">
-                <span className="text-3xl font-extrabold font-mono text-white">R$ 97</span>
+                <span className="text-3xl font-extrabold font-mono text-white">R$ 47</span>
                 <span className="text-xs text-slate-400 font-mono"> / mês</span>
+                <p className="text-[10px] text-slate-500 font-mono mt-1">
+                  Custo operacional: ~R$ 31/mês (IA + cloud + base SINAPI)
+                </p>
               </div>
 
               <ul className="space-y-2.5 text-xs text-slate-200 pt-4 border-t border-white/[0.08] font-mono">
@@ -416,8 +419,11 @@ export default function LandingPage() {
               </div>
 
               <div className="py-2">
-                <span className="text-3xl font-extrabold font-mono text-white">R$ 247</span>
+                <span className="text-3xl font-extrabold font-mono text-white">R$ 97</span>
                 <span className="text-xs text-slate-400 font-mono"> / mês</span>
+                <p className="text-[10px] text-slate-500 font-mono mt-1">
+                  Custo operacional: ~R$ 68/mês (infraestrutura + atualizações SECID/SINAPI)
+                </p>
               </div>
 
               <ul className="space-y-2.5 text-xs text-slate-300 pt-4 border-t border-white/[0.08] font-mono">

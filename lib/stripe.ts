@@ -13,14 +13,14 @@ export const PLANS: Record<'pro' | 'construtora', PlanConfig> = {
   pro: {
     id: 'pro',
     name: 'Plano Profissional - DeVici',
-    priceCents: 9700,
+    priceCents: 4700, // R$ 47,00
     limit: 10,
     description: 'Até 10 planilhas completas por mês, BDI TCU Oficial e Suporte Especializado',
   },
   construtora: {
     id: 'construtora',
     name: 'Plano Construtora - DeVici',
-    priceCents: 24700,
+    priceCents: 9700, // R$ 97,00
     limit: 999,
     description: 'Planilhas ilimitadas, múltiplos acessos e suporte avançado SINAPI/SICRO/SECID',
   },

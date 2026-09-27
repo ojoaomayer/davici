@@ -19,6 +19,7 @@ import { CheckoutButton } from '@/components/CheckoutButton'
 import { HeroActions } from '@/components/HeroActions'
 import { FaqSection } from '@/components/FaqSection'
 import { BrandLogo } from '@/components/BrandLogo'
+import { HeroStats } from '@/components/HeroStats'
 
 export default function LandingPage() {
   return (
@@ -54,6 +55,9 @@ export default function LandingPage() {
 
           {/* CTAs — Client Component com seleção direta de escopo */}
           <HeroActions />
+
+          {/* Stats em Tempo Real */}
+          <HeroStats />
 
           {/* Demonstration Card (Preview Interativo) */}
           <div id="demonstracao" className="w-full max-w-4xl mx-auto pt-6 px-1 sm:px-0">
@@ -195,11 +199,8 @@ export default function LandingPage() {
             <span>Fluxo de Trabalho</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-white">
-            Como funciona o <span className="font-semibold text-blue-300">DeVici</span>
+            Como o DeVici<span className="font-semibold text-blue-300"> trabalha</span>
           </h2>
-          <p className="text-xs text-slate-400 max-w-xl mx-auto">
-            Da planilha bruta ao orçamento oficial em 3 etapas simples.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -228,7 +229,7 @@ export default function LandingPage() {
                 A IA faz o pareamento técnico
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                O motor entende termos de obra — sabe a diferença entre bloco de concreto e cerâmico, e cruza com a composição certa.
+                O motor entende termos de obra, sabe a diferença entre bloco de concreto e cerâmico, e cruza com a composição certa.
               </p>
             </div>
           </div>
@@ -274,7 +275,7 @@ export default function LandingPage() {
               href="/ferramentas/calculadora-bdi"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors pt-2"
             >
-              <span>Calcular BDI agora</span>
+              <span>Calcular BDI</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -306,7 +307,7 @@ export default function LandingPage() {
         <div className="text-center space-y-2">
           <div className="text-xs font-mono uppercase text-blue-400 font-semibold tracking-wider flex items-center justify-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-            <span>Licenciamento</span>
+            <span>Devici pro</span>
           </div>
           <h2 className="text-3xl font-light tracking-tight text-white">
             Planos e Acesso

@@ -467,12 +467,12 @@ export default function LandingPage() {
       </section>
 
       {/* 8. FOOTER & CHAMADA FINAL */}
-      <section className="relative z-10 py-20 border-t border-white/[0.08] bg-[#030712]/80">
+      <section className="relative z-10 py-20 border-t border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#030712]/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
-          <h2 className="text-3xl sm:text-4xl font-light tracking-tight text-white">
+          <h2 className="text-3xl sm:text-4xl font-light tracking-tight text-slate-900 dark:text-white">
             Pronto para orçar sua próxima obra em minutos?
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto font-normal">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto font-normal">
             Suba sua primeira planilha agora mesmo e veja o DeVici em ação.
           </p>
           <div className="pt-2">

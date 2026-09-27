@@ -247,7 +247,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white relative overflow-hidden">
-      {/* Background Lighting & Blueprint Grid */}
+      {/* Background Lighting e Blueprint Grid */}
       <div className="absolute inset-0 blueprint-grid pointer-events-none opacity-50" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cinematic-glow pointer-events-none" />
 

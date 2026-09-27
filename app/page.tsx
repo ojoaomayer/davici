@@ -49,7 +49,7 @@ export default function LandingPage() {
 
             {/* Sub-headline */}
             <p className="animate-fade-in-up delay-200 text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal px-2">
-              Esqueça o copia-e-cola em planilhas intermináveis da Caixa. O DeVici lê a sua lista de quantitativos, encontra a composição exata na SINAPI e entrega seu orçamento fechado e conferido em minutos.
+              Esqueça o copia-e-cola em planilhas da Caixa. O DeVici lê a sua lista de quantitativos, encontra a composição exata na SINAPI e entrega seu orçamento fechado e conferido em minutos.
             </p>
           </div>
 
@@ -59,52 +59,10 @@ export default function LandingPage() {
           {/* Stats em Tempo Real */}
           <HeroStats />
 
-          {/* Demonstration Card (Preview Interativo) */}
-          <div id="demonstracao" className="w-full max-w-4xl mx-auto pt-6 px-1 sm:px-0">
-            <div className="glass-panel rounded-xl overflow-hidden text-left shadow-[0_25px_60px_-15px_rgba(15,23,42,0.1)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] blueprint-box w-full border border-slate-200 dark:border-white/[0.08]">
-              <div className="bg-slate-100/90 dark:bg-[#0b132b]/60 px-4 py-2.5 border-b border-slate-200 dark:border-white/[0.08] flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/10" />
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/10" />
-                <span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-white/10" />
-              </div>
-
-              <div className="p-3 sm:p-6 font-mono text-xs space-y-3 overflow-x-auto bg-white/70 dark:bg-[#030712]/50 w-full">
-                <div className="p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-900/40 rounded-lg border border-slate-200 dark:border-white/[0.06] space-y-2 w-full">
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-500 dark:text-slate-400">
-                    <span className="text-slate-400 dark:text-slate-500 font-bold shrink-0">01</span>
-                    <span className="truncate">&quot;Locação convencional de obra através de gabarito de tábuas corridas&quot; (50 M)</span>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-800 dark:text-slate-200">
-                    <span className="text-blue-600 dark:text-blue-400 font-bold shrink-0">105009</span>
-                    <span className="truncate max-w-md">LOCAÇÃO CONVENCIONAL DE OBRA, UTILIZANDO GABARITO... AF_03/2024</span>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-[11px] text-slate-500 dark:text-slate-400 pt-1.5 border-t border-slate-200 dark:border-white/[0.06]">
-                    <span className="text-blue-600 dark:text-blue-300 font-bold">99.8% correspondência</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">Unit: R$ 108,58 | Total: R$ 5.429,00</span>
-                  </div>
-                </div>
-
-                <div className="p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-900/40 rounded-lg border border-slate-200 dark:border-white/[0.06] space-y-2 w-full">
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-500 dark:text-slate-400">
-                    <span className="text-slate-400 dark:text-slate-500 font-bold shrink-0">02</span>
-                    <span className="truncate">&quot;Concreto usinado bombeável fck 25 MPa para vigas e pilares&quot; (15 M3)</span>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-slate-800 dark:text-slate-200">
-                    <span className="text-blue-600 dark:text-blue-400 font-bold shrink-0">99439</span>
-                    <span className="truncate max-w-md">CONCRETAGEM DE EDIFICAÇÕES (PAREDES E LAJES)... FCK 25 MPA AF_09/2024</span>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-[11px] text-slate-500 dark:text-slate-400 pt-1.5 border-t border-slate-200 dark:border-white/[0.06]">
-                    <span className="text-blue-600 dark:text-blue-300 font-bold">100% correspondência</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-bold tabular-nums">Unit: R$ 685,34 | Total: R$ 10.280,10</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* 2. BARRA DE PROVA SOCIAL & INTEGRAÇÃO */}
+      {/* 2. BARRA DE PROVA SOCIAL e INTEGRAÇÃO */}
       <section className="relative z-10 py-12 border-y border-slate-200 dark:border-white/[0.06] bg-slate-100/70 dark:bg-[#030712]/60">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 text-center">
           <p className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
@@ -114,7 +72,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="glass-card p-4 rounded-xl flex items-center justify-center gap-3 text-xs font-mono text-slate-300">
               <span className="w-2 h-2 rounded-full bg-blue-400 neon-dot-blue shrink-0" />
-              <span>Bases SINAPI &amp; SICRO atualizadas mensalmente</span>
+              <span>Bases SINAPI e SICRO atualizadas mensalmente</span>
             </div>
 
             <div className="glass-card p-4 rounded-xl flex items-center justify-center gap-3 text-xs font-mono text-slate-300">
@@ -473,7 +431,7 @@ export default function LandingPage() {
         <FaqSection />
       </section>
 
-      {/* 8. FOOTER & CHAMADA FINAL */}
+      {/* 8. FOOTER e CHAMADA FINAL */}
       <section className="relative z-10 py-20 border-t border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#030712]/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
           <h2 className="text-3xl sm:text-4xl font-light tracking-tight text-slate-900 dark:text-white">

@@ -86,7 +86,7 @@ function OrcamentoContent() {
 
   return (
     <div className="min-h-screen bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white flex flex-col relative overflow-hidden">
-      {/* Background Cinematographic Lighting & Blueprint Grid */}
+      {/* Background Cinematographic Lighting e Blueprint Grid */}
       <div className="absolute inset-0 blueprint-grid pointer-events-none opacity-50" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-cinematic-glow pointer-events-none" />
 
@@ -102,7 +102,7 @@ function OrcamentoContent() {
                   isProjetos ? 'bg-cyan-400 neon-dot-blue' : 'bg-blue-400 neon-dot-blue'
                 }`}
               />
-              <span>{isProjetos ? 'Módulo de Projetos & Serviços Técnicos' : 'Módulo Executivo'}</span>
+              <span>{isProjetos ? 'Módulo de Projetos e Serviços Técnicos' : 'Módulo Executivo'}</span>
               <span className="text-white/20">•</span>
               <span className={isProjetos ? 'text-cyan-400' : 'text-blue-400'}>
                 {isProjetos ? 'SECID/PR (Res. 094/2026)' : 'SINAPI Oficial'}
@@ -111,12 +111,12 @@ function OrcamentoContent() {
             <h1 className="text-2xl font-light tracking-tight text-white">
               {isProjetos ? (
                 <>
-                  Orçamento de Projetos &amp;{' '}
+                  Orçamento de Projetos e{' '}
                   <span className="font-semibold text-cyan-300">Serviços Técnicos</span>
                 </>
               ) : (
                 <>
-                  Orçamento de Obras &amp;{' '}
+                  Orçamento de Obras e{' '}
                   <span className="font-semibold text-blue-300">Conciliação Oficial</span>
                 </>
               )}
@@ -239,7 +239,7 @@ function OrcamentoContent() {
           </div>
         )}
 
-        {/* Step 3: Export & Save */}
+        {/* Step 3: Export e Save */}
         {step === 3 && (
           <div className="space-y-6 animate-fade-in">
             <ExportSection results={results} config={config} />

@@ -87,7 +87,7 @@ export default function ScopeSelector({ value, onChange, disabled = false }: Sco
           </p>
         </button>
 
-        {/* Opção B: Projetos & Serviços Técnicos */}
+        {/* Opção B: Projetos e Serviços Técnicos */}
         <button
           type="button"
           disabled={disabled}
@@ -116,7 +116,7 @@ export default function ScopeSelector({ value, onChange, disabled = false }: Sco
               </div>
               <div>
                 <h4 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
-                  <span>Projetos &amp; Serviços Técnicos</span>
+                  <span>Projetos e Serviços Técnicos</span>
                 </h4>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-400/20">

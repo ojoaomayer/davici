@@ -7,7 +7,7 @@ import { CheckoutButton } from '@/components/CheckoutButton'
 /**
  * HeroActions — Client Component com botões de CTA com seleção direta de escopo:
  * 1. "Execução de Obra" (SINAPI)
- * 2. "Projetos & Serviços Técnicos" (SECID/PR)
+ * 2. "Projetos e Serviços Técnicos" (SECID/PR)
  */
 export function HeroActions() {
   return (
@@ -25,13 +25,13 @@ export function HeroActions() {
           </div>
         </Link>
 
-        {/* Opção B: Projetos & Serviços Técnicos (SECID/PR) */}
+        {/* Opção B: Projetos e Serviços Técnicos (SECID/PR) */}
         <Link
           href="/orcamento?modo=projetos"
           className="w-full sm:w-auto px-7 py-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 rounded-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 dark:bg-cyan-400 dark:hover:bg-cyan-300 dark:border-cyan-400 dark:text-slate-950 transition-all dark:shadow-[0_0_20px_rgba(6,182,212,0.25)] group cursor-pointer"
         >
           <Compass className="w-4 h-4 text-sky-600 dark:text-slate-900" />
-          <span>Projetos &amp; Serviços (SECID/PR)</span>
+          <span>Projetos e Serviços (SECID/PR)</span>
           <div className="w-5 h-5 rounded-full bg-sky-200/70 dark:bg-slate-950/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
             <ArrowRight className="w-3.5 h-3.5 text-sky-700 dark:text-slate-950" />
           </div>
@@ -42,7 +42,7 @@ export function HeroActions() {
       <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-xs text-slate-400 font-mono pt-2 text-center max-w-full px-2">
         <span>✓ Sem cartão de crédito</span>
         <span className="hidden sm:inline text-slate-600">•</span>
-        <span>✓ Bases SINAPI (27 UFs) &amp; SECID/PR Integradas</span>
+        <span>✓ Bases SINAPI (27 UFs) e SECID/PR Integradas</span>
         <span className="hidden sm:inline text-slate-600">•</span>
         <span>✓ Exportação 100% editável em Excel</span>
       </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Sun, Moon } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 
@@ -10,7 +10,32 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ className = '', showLabel = false }: ThemeToggleProps) {
-  const { theme, isDark, toggleTheme } = useTheme()
+  const { isDark, toggleTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Antes de montar no cliente, renderiza um botão estático neutro idêntico ao SSR
+  // para evitar qualquer incompatibilidade de hidratação (hydration mismatch)
+  if (!mounted) {
+    return (
+      <button
+        type="button"
+        aria-label="Alternar tema"
+        className={`relative inline-flex items-center justify-center gap-2 p-2 rounded-xl border border-slate-200 dark:border-white/[0.1] bg-white/[0.05] text-slate-400 ${className}`}
+      >
+        <div className="relative w-4 h-4 flex items-center justify-center">
+          <Sun className="w-4 h-4 hidden dark:block text-amber-300" />
+          <Moon className="w-4 h-4 block dark:hidden text-slate-700" />
+        </div>
+        {showLabel && (
+          <span className="text-xs font-mono font-medium opacity-0">Tema</span>
+        )}
+      </button>
+    )
+  }
 
   return (
     <button

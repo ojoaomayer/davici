@@ -2,7 +2,6 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { useTheme } from '@/context/ThemeContext'
 
 interface BrandLogoProps {
   className?: string
@@ -19,14 +18,6 @@ export function BrandLogo({
   priority = false,
   variant = 'auto',
 }: BrandLogoProps) {
-  let isDark = true
-  try {
-    const themeContext = useTheme()
-    isDark = themeContext.isDark
-  } catch {
-    isDark = true
-  }
-
   if (variant === 'white') {
     return (
       <Image
@@ -53,18 +44,29 @@ export function BrandLogo({
     )
   }
 
-  // Auto mode: seleciona a logo de acordo com o tema atual
-  // Logo Branca para fundo escuro, Logo Preta para fundo claro
+  // Alternância 100% via CSS puro:
+  // Renderiza ambas as imagens no JSX estático (SSR e Client idênticos, 0 erro de hidratação).
+  // A classe .dark no HTML/Body controla qual delas é exibida instantaneamente.
   return (
     <div className={`relative inline-flex items-center justify-center select-none ${className}`}>
+      {/* Logo Branca (Visível no Dark Mode) */}
       <Image
-        key={isDark ? 'dark-logo' : 'light-logo'}
-        src={isDark ? '/logos/logo-branca.png' : '/logos/logo-preta.png'}
+        src="/logos/logo-branca.png"
         alt="DeVici"
         width={width}
         height={height}
         priority={priority}
-        className="object-contain h-full w-auto transition-all duration-300 hover:opacity-90"
+        className="object-contain h-full w-auto transition-opacity duration-200 hidden dark:block"
+      />
+
+      {/* Logo Preta (Visível no Light Mode) */}
+      <Image
+        src="/logos/logo-preta.png"
+        alt="DeVici"
+        width={width}
+        height={height}
+        priority={priority}
+        className="object-contain h-full w-auto transition-opacity duration-200 block dark:hidden"
       />
     </div>
   )

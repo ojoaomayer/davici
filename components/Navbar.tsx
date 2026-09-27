@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -21,6 +21,11 @@ export default function Navbar() {
   const pathname = usePathname()
   const { user, userData, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const isActive = (path: string) => pathname === path
   const closeMobileMenu = () => setMobileMenuOpen(false)
@@ -85,7 +90,7 @@ export default function Navbar() {
 
           {/* Desktop Auth (Hidden on small screens where drawer is used) */}
           <div className="hidden md:flex items-center gap-4">
-            {user ? (
+            {mounted && user ? (
               <div className="flex items-center gap-3">
                 <Link
                   href="/dashboard"
@@ -137,7 +142,7 @@ export default function Navbar() {
           </div>
 
           {/* Quick mobile action & hamburger */}
-          {!user && (
+          {mounted && !user && (
             <Link
               href="/login?mode=signup"
               className="md:hidden btn-primary px-3 py-1 text-[11px] font-semibold"

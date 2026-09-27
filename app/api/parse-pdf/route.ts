@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         // The user will map this to description, but might miss quantities.
         grid.push([trimmed]);
       } else {
-        grid.push(columns.map(c => c.trim()));
+        grid.push(columns.map((c: string) => c.trim()));
       }
     }
 

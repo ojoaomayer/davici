@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-const pdfParse = require('pdf-parse');
 
 export async function POST(req: NextRequest) {
   try {
+    // Importação dinâmica para evitar erro de 'DOMMatrix is not defined' no build do Vercel
+    const pdfParse = require('pdf-parse');
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 

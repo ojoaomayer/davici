@@ -28,12 +28,12 @@ export function HeroActions() {
         {/* Opção B: Projetos & Serviços Técnicos (SECID/PR) */}
         <Link
           href="/orcamento?modo=projetos"
-          className="w-full sm:w-auto px-7 py-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 rounded-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 dark:bg-gradient-to-r dark:from-cyan-500/20 dark:to-blue-500/20 dark:hover:from-cyan-500/30 dark:hover:to-blue-500/30 dark:border-cyan-400/40 dark:text-cyan-200 transition-all dark:shadow-[0_0_20px_rgba(6,182,212,0.15)] group cursor-pointer"
+          className="w-full sm:w-auto px-7 py-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 rounded-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 dark:bg-gradient-to-r dark:from-cyan-500/20 dark:to-blue-500/20 dark:hover:from-cyan-500/30 dark:hover:to-blue-500/30 dark:border-cyan-400/40 dark:text-white transition-all dark:shadow-[0_0_20px_rgba(6,182,212,0.15)] group cursor-pointer"
         >
           <Compass className="w-4 h-4 text-sky-600 dark:text-cyan-400" />
           <span>Projetos &amp; Serviços (SECID/PR)</span>
           <div className="w-5 h-5 rounded-full bg-sky-200/70 dark:bg-cyan-400/20 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-            <ArrowRight className="w-3.5 h-3.5 text-sky-700 dark:text-cyan-300" />
+            <ArrowRight className="w-3.5 h-3.5 text-sky-700 dark:text-white" />
           </div>
         </Link>
       </div>

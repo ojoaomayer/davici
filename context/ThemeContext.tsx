@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react'
 
 export type Theme = 'dark' | 'light'
 
@@ -17,19 +17,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => {
-    // Verificar preferência salva no localStorage ou preferência do sistema
+  // useLayoutEffect: re-aplica o tema ANTES do paint.
+  // Corrige o React 19 Strict Mode dev que remonta componentes e limpa classes do <html>,
+  // fazendo o tema não se propagar para o restante do site fora da Navbar.
+  useLayoutEffect(() => {
     try {
       const savedTheme = localStorage.getItem('devici-theme') as Theme | null
-      if (savedTheme === 'light' || savedTheme === 'dark') {
-        setThemeState(savedTheme)
-        applyTheme(savedTheme)
-      } else {
-        const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches
-        const initialTheme: Theme = prefersLight ? 'light' : 'dark'
-        setThemeState(initialTheme)
-        applyTheme(initialTheme)
-      }
+      const resolvedTheme: Theme =
+        savedTheme === 'light' || savedTheme === 'dark'
+          ? savedTheme
+          : window.matchMedia('(prefers-color-scheme: light)').matches
+          ? 'light'
+          : 'dark'
+      setThemeState(resolvedTheme)
+      applyTheme(resolvedTheme)
     } catch {
       applyTheme('dark')
     }

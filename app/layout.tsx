@@ -86,7 +86,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="min-h-full flex flex-col bg-[#020617] text-slate-100 selection:bg-blue-500/30 selection:text-white font-sans transition-colors duration-200"
+        className="min-h-full flex flex-col bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-100 selection:bg-blue-500/30 selection:text-white font-sans transition-colors duration-300"
       >
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>

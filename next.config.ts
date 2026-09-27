@@ -17,36 +17,15 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // Headers de cache otimizados (apenas em produção, para não travar cache de chunks no dev)
-  async headers() {
-    if (process.env.NODE_ENV !== 'production') {
-      return [
-        {
-          source: '/(.*\\.mp4)',
-          headers: [
-            {
-              key: 'Cache-Control',
-              value: 'public, max-age=86400',
-            },
-            {
-              key: 'Accept-Ranges',
-              value: 'bytes',
-            },
-          ],
-        },
-      ];
-    }
+  // Turbopack: sem configurações extras — usa .next/ local por padrão
+  turbopack: {},
 
+  // Headers de cache para assets de vídeo (mp4)
+  // NOTA: Não configuramos cache para /_next/static em produção aqui para
+  // evitar o aviso do Next.js. Em produção, CDNs como Vercel já gerenciam
+  // o cache dos assets estáticos automaticamente.
+  async headers() {
     return [
-      {
-        source: '/_next/static/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
       {
         source: '/(.*\\.mp4)',
         headers: [

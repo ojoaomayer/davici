@@ -17,11 +17,29 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react'],
   },
 
-  // Headers de cache agressivo para assets estáticos (fontes, imagens, JS/CSS)
+  // Headers de cache otimizados (apenas em produção, para não travar cache de chunks no dev)
   async headers() {
+    if (process.env.NODE_ENV !== 'production') {
+      return [
+        {
+          source: '/(.*\\.mp4)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=86400',
+            },
+            {
+              key: 'Accept-Ranges',
+              value: 'bytes',
+            },
+          ],
+        },
+      ];
+    }
+
     return [
       {
-        source: '/(.*\\.(?:js|css|woff2|woff|ttf|ico|png|jpg|jpeg|gif|svg|webp|avif))',
+        source: '/_next/static/(.*)',
         headers: [
           {
             key: 'Cache-Control',

@@ -20,8 +20,8 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const base64Data = Buffer.from(arrayBuffer).toString('base64');
 
-    // Usar o modelo Flash que é ultrarrápido, barato e suporta PDFs/Imagens nativamente
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    // Usar o modelo Flash mais recente disponível, que suporta PDFs/Imagens nativamente
+    const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
 
     const prompt = `
     Você é um extrator de dados de orçamentos e planilhas de engenharia.

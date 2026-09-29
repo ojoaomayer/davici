@@ -16,25 +16,17 @@ export function HeroActions() {
         {/* Opção A: Execução de Obra (SINAPI) */}
         <Link
           href="/orcamento?modo=execucao"
-          className="btn-primary w-full sm:w-auto px-7 py-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 group cursor-pointer"
+          className="h-[50px] px-6 rounded-[50px] bg-gradient-to-br from-blue-400 to-blue-600 shadow-[0_20px_30px_-6px_rgba(59,130,246,0.5)] outline-none cursor-pointer border-none text-white text-[14px] sm:text-[16px] font-semibold flex items-center justify-center transition-all duration-300 ease-in-out hover:translate-y-[3px] hover:shadow-none active:opacity-50"
         >
-          <HardHat className="w-4 h-4 text-slate-900" />
-          <span>Execução de Obra (SINAPI)</span>
-          <div className="w-5 h-5 rounded-full bg-slate-900/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-            <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
-          </div>
+          Execução de Obra (SINAPI)
         </Link>
 
         {/* Opção B: Projetos e Serviços Técnicos (SECID/PR) */}
         <Link
           href="/orcamento?modo=projetos"
-          className="w-full sm:w-auto px-7 py-3.5 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2.5 rounded-full bg-sky-50 hover:bg-sky-100 border border-sky-200 text-sky-700 dark:bg-cyan-400 dark:hover:bg-cyan-300 dark:border-cyan-400 dark:text-slate-950 transition-all dark:shadow-[0_0_20px_rgba(6,182,212,0.25)] group cursor-pointer"
+          className="h-[50px] px-6 rounded-[50px] bg-gradient-to-br from-cyan-400 to-cyan-600 shadow-[0_20px_30px_-6px_rgba(6,182,212,0.5)] outline-none cursor-pointer border-none text-white text-[14px] sm:text-[16px] font-semibold flex items-center justify-center transition-all duration-300 ease-in-out hover:translate-y-[3px] hover:shadow-none active:opacity-50"
         >
-          <Compass className="w-4 h-4 text-sky-600 dark:text-slate-900" />
-          <span>Projetos e Serviços (SECID/PR)</span>
-          <div className="w-5 h-5 rounded-full bg-sky-200/70 dark:bg-slate-950/10 flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
-            <ArrowRight className="w-3.5 h-3.5 text-sky-700 dark:text-slate-950" />
-          </div>
+          Projetos e Serviços (SECID/PR)
         </Link>
       </div>
 

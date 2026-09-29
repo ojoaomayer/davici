@@ -31,7 +31,7 @@ export default function Navbar() {
   const closeMobileMenu = () => setMobileMenuOpen(false)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 dark:border-white/[0.08] bg-white/85 dark:bg-[#020617]/85 backdrop-blur-xl transition-colors">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/20 dark:border-white/[0.08] bg-white/10 dark:bg-[#020617]/10 backdrop-blur-xl transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand & Nav */}
         <div className="flex items-center gap-10">

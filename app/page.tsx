@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import AnimatedCounter from '@/components/AnimatedCounter'
-import ParticlesComponent from '@/components/ui/particles-bg'
+import AuroraBackground from '@/components/ui/aurora-background'
 import { CheckoutButton } from '@/components/CheckoutButton'
 import { HeroActions } from '@/components/HeroActions'
 import { FaqSection } from '@/components/FaqSection'
@@ -23,21 +23,19 @@ import { HeroStats } from '@/components/HeroStats'
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-white relative bg-gradient-to-b from-slate-50 via-slate-100/90 to-white dark:from-[#020617] dark:via-[#050b14] dark:via-60% dark:to-[#020617] w-full overflow-x-hidden max-w-full transition-colors">
+    <div className="min-h-screen text-slate-900 dark:text-slate-100 flex flex-col selection:bg-blue-500/30 selection:text-white relative w-full overflow-x-hidden max-w-full transition-colors bg-slate-50/20 dark:bg-[#020617]/40">
+      <div className="fixed inset-0 z-[-1] pointer-events-none">
+        <AuroraBackground />
+      </div>
       <Navbar />
 
       {/* 1. HERO SECTION (DOBRA PRINCIPAL) */}
-      <section className="relative z-10 w-full overflow-hidden flex flex-col justify-center max-w-full">
-        {/* Localized Particles Container */}
-        <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden max-w-full">
-          <ParticlesComponent />
-        </div>
-
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 lg:pt-20 pb-10 sm:pb-16 text-center space-y-8 w-full">
+      <div className="relative z-10 w-full overflow-hidden flex flex-col justify-center max-w-full py-10 sm:py-16">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 lg:pt-20 text-center space-y-8 w-full">
           {/* Headline (H1) */}
           <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
             <h1 className="animate-fade-in-up delay-100 text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-light tracking-tight text-slate-900 dark:text-white leading-[1.2] max-w-full">
-              Seu orçamento pronto <br className="hidden sm:inline" />
+              Seu orçamento SINAPI pronto <br className="hidden sm:inline" />
               <span className="font-semibold bg-clip-text text-transparent bg-gradient-to-b from-slate-950 via-slate-800 to-blue-700 dark:from-white dark:via-slate-100 dark:to-blue-200">
                 enquanto você toma um{' '}
                 <span className="relative inline-block px-1">
@@ -49,7 +47,7 @@ export default function LandingPage() {
 
             {/* Sub-headline */}
             <p className="animate-fade-in-up delay-200 text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal px-2">
-              Esqueça o copia-e-cola em planilhas da Caixa. O DeVici lê a sua lista de quantitativos, encontra a composição exata na SINAPI e entrega seu orçamento fechado e conferido em minutos.
+              <strong>Plataforma inteligente de engenharia de custos.</strong> Esqueça o copia-e-cola em planilhas: nossa IA cruza seus quantitativos com as bases SINAPI e SECID em segundos, gerando orçamentos precisos, licitáveis e à prova de erros.
             </p>
           </div>
 
@@ -60,43 +58,15 @@ export default function LandingPage() {
           <HeroStats />
 
         </div>
-      </section>
+      </div>
 
-      {/* 2. BARRA DE PROVA SOCIAL e INTEGRAÇÃO */}
-      <section className="relative z-10 py-12 border-y border-slate-200 dark:border-white/[0.06] bg-slate-100/70 dark:bg-[#030712]/60">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 text-center">
-          <p className="text-xs font-mono uppercase tracking-wider text-slate-400 font-medium">
-            Desenvolvido para a rotina pesada de quem vive de obra e licitação
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="glass-card p-4 rounded-xl flex items-center justify-center gap-3 text-xs font-mono text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-blue-400 neon-dot-blue shrink-0" />
-              <span>Bases SINAPI e SICRO atualizadas mensalmente</span>
-            </div>
-
-            <div className="glass-card p-4 rounded-xl flex items-center justify-center gap-3 text-xs font-mono text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 neon-dot-emerald shrink-0" />
-              <span>Algoritmo semântico de correspondência com 96% de assertividade</span>
-            </div>
-
-            <div className="glass-card p-4 rounded-xl flex items-center justify-center gap-3 text-xs font-mono text-slate-300">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 neon-dot-blue shrink-0" />
-              <span>Compatível com arquivos .XLSX, .CSV e tabelas extraídas de Revit</span>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* 3. SEÇÃO "O ANTES vs. DEPOIS" (A DOR REAL) */}
       <section className="relative z-10 py-20 max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
         <div className="text-center space-y-3">
-          <div className="text-xs font-mono uppercase text-blue-400 font-semibold tracking-wider flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-            <span>Comparativo Operacional</span>
-          </div>
+
           <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-white max-w-2xl mx-auto">
-            A engenharia não deveria perder dias caçando códigos no Excel.
+            A engenharia moderna não perde dias caçando códigos no Excel.
           </h2>
         </div>
 
@@ -125,7 +95,7 @@ export default function LandingPage() {
           </div>
 
           {/* Com o DeVici */}
-          <div className="glass-panel p-6 sm:p-7 rounded-2xl space-y-5 border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.12)]">
+          <div className="glass-panel p-6 sm:p-7 rounded-2xl space-y-5 border-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
             <div className="flex items-center gap-2 text-blue-300 font-semibold text-sm">
               <Check className="w-4 h-4 text-blue-400" />
               <span>O fluxo inteligente do DeVici</span>
@@ -152,12 +122,9 @@ export default function LandingPage() {
       {/* 4. COMO FUNCIONA (PASSO A PASSO OBJETIVO) */}
       <section id="como-funciona" className="relative z-10 py-20 max-w-6xl mx-auto px-4 sm:px-6 space-y-12">
         <div className="text-center space-y-3">
-          <div className="text-xs font-mono uppercase text-blue-400 font-semibold tracking-wider flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-            <span>Fluxo de Trabalho</span>
-          </div>
+
           <h2 className="text-2xl sm:text-4xl font-light tracking-tight text-white">
-            Como o DeVici<span className="font-semibold text-blue-300"> trabalha</span>
+            Como nossa IA<span className="font-semibold text-blue-300"> automatiza seus orçamentos</span>
           </h2>
         </div>
 
@@ -263,10 +230,7 @@ export default function LandingPage() {
       {/* 6. TABELA DE PREÇOS (TRANSPARENTE E DIRETA) */}
       <section id="precos" className="relative z-10 py-20 max-w-6xl mx-auto px-4 sm:px-6 space-y-12">
         <div className="text-center space-y-2">
-          <div className="text-xs font-mono uppercase text-blue-400 font-semibold tracking-wider flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-            <span>Devici pro</span>
-          </div>
+
           <h2 className="text-3xl font-light tracking-tight text-white">
             Planos e Acesso
           </h2>
@@ -285,7 +249,7 @@ export default function LandingPage() {
               </div>
 
               <div className="py-2">
-                <span className="text-3xl font-extrabold font-mono text-white">R$ 0</span>
+                <span className="text-3xl font-extrabold font-mono text-white tabular-nums">R$ 0</span>
                 <span className="text-xs text-slate-400 font-mono"> / mês</span>
               </div>
 
@@ -318,7 +282,7 @@ export default function LandingPage() {
           </div>
 
           {/* Plano Profissional (Destaque) */}
-          <div className="glass-panel rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-6 relative border-blue-500/40 shadow-[0_0_35px_rgba(59,130,246,0.18)]">
+          <div className="glass-panel rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-6 relative border-blue-500/10 shadow-[0_0_35px_rgba(59,130,246,0.22)]">
             <div className="absolute -top-3 right-6">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-blue-500 text-slate-950 shadow-[0_0_12px_rgba(59,130,246,0.8)]">
                 Mais usado
@@ -332,7 +296,7 @@ export default function LandingPage() {
               </div>
 
               <div className="py-2">
-                <span className="text-3xl font-extrabold font-mono text-white">R$ 47</span>
+                <span className="text-3xl font-extrabold font-mono text-white tabular-nums">R$ 47</span>
                 <span className="text-xs text-slate-400 font-mono"> / mês</span>
                 <p className="text-[10px] text-slate-500 font-mono mt-1">
                   Custo operacional: ~R$ 31/mês (IA + cloud + base SINAPI)
@@ -377,7 +341,7 @@ export default function LandingPage() {
               </div>
 
               <div className="py-2">
-                <span className="text-3xl font-extrabold font-mono text-white">R$ 97</span>
+                <span className="text-3xl font-extrabold font-mono text-white tabular-nums">R$ 97</span>
                 <span className="text-xs text-slate-400 font-mono"> / mês</span>
                 <p className="text-[10px] text-slate-500 font-mono mt-1">
                   Custo operacional: ~R$ 68/mês (infraestrutura + atualizações SECID/SINAPI)
@@ -418,10 +382,7 @@ export default function LandingPage() {
       {/* 7. FAQ (QUEBRA DE OBJEÇÕES DE ENGENHEIRO) */}
       <section className="relative z-10 py-20 w-full max-w-4xl mx-auto px-4 sm:px-6 space-y-10">
         <div className="text-center space-y-2">
-          <div className="text-xs font-mono uppercase text-blue-400 font-semibold tracking-wider flex items-center justify-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 neon-dot-blue" />
-            <span>Dúvidas Frequentes</span>
-          </div>
+
           <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
             Perguntas de Engenheiro
           </h2>
@@ -432,7 +393,7 @@ export default function LandingPage() {
       </section>
 
       {/* 8. FOOTER e CHAMADA FINAL */}
-      <section className="relative z-10 py-20 border-t border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-[#030712]/80">
+      <section className="relative z-10 py-20 border-t border-slate-200/20 dark:border-white/[0.08] bg-transparent">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
           <h2 className="text-3xl sm:text-4xl font-light tracking-tight text-slate-900 dark:text-white">
             Pronto para orçar sua próxima obra em minutos?

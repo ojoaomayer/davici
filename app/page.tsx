@@ -35,7 +35,7 @@ export default function LandingPage() {
           {/* Headline (H1) */}
           <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
             <h1 className="animate-fade-in-up delay-100 text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-light tracking-tight text-slate-900 dark:text-white leading-[1.2] max-w-full">
-              Seu orçamento SINAPI pronto <br className="hidden sm:inline" />
+              Seu orçamento pronto <br className="hidden sm:inline" />
               <span className="font-semibold bg-clip-text text-transparent bg-gradient-to-b from-slate-950 via-slate-800 to-blue-700 dark:from-white dark:via-slate-100 dark:to-blue-200">
                 enquanto você toma um{' '}
                 <span className="relative inline-block px-1">
@@ -47,7 +47,7 @@ export default function LandingPage() {
 
             {/* Sub-headline */}
             <p className="animate-fade-in-up delay-200 text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal px-2">
-              <strong>Plataforma inteligente de engenharia de custos.</strong> Esqueça o copia-e-cola em planilhas: nossa IA cruza seus quantitativos com as bases SINAPI e SECID em segundos, gerando orçamentos precisos, licitáveis e à prova de erros.
+              <strong>Plataforma inteligente de engenharia de custos.</strong> Esqueça o copia-e-cola em planilhas: Cruzamos seus quantitativos com as bases SINAPI e SECID em segundos, gerando orçamentos precisos, licitáveis e sem erros.
             </p>
           </div>
 
@@ -384,7 +384,7 @@ export default function LandingPage() {
         <div className="text-center space-y-2">
 
           <h2 className="text-2xl sm:text-3xl font-light tracking-tight text-white">
-            Perguntas de Engenheiro
+            Dúvidas Frequentes
           </h2>
         </div>
 
@@ -399,7 +399,7 @@ export default function LandingPage() {
             Pronto para orçar sua próxima obra em minutos?
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto font-normal">
-            Suba sua primeira planilha agora mesmo e veja o DeVici em ação.
+            Suba sua primeira planilha agora mesmo e veja como o DeVici trabalha.
           </p>
           <div className="pt-2">
             <Link

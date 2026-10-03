@@ -1,103 +1,45 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useLayoutEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { ThemeProvider as NextThemesProvider, useTheme as useNextTheme } from 'next-themes'
 
 export type Theme = 'dark' | 'light'
 
-interface ThemeContextType {
-  theme: Theme
-  isDark: boolean
-  toggleTheme: () => void
-  setTheme: (theme: Theme) => void
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark')
-  const [mounted, setMounted] = useState(false)
-
-  // useLayoutEffect: re-aplica o tema ANTES do paint.
-  // Corrige o React 19 Strict Mode dev que remonta componentes e limpa classes do <html>,
-  // fazendo o tema não se propagar para o restante do site fora da Navbar.
-  useLayoutEffect(() => {
-    try {
-      const savedTheme = localStorage.getItem('devici-theme') as Theme | null
-      const resolvedTheme: Theme =
-        savedTheme === 'light' || savedTheme === 'dark'
-          ? savedTheme
-          : window.matchMedia('(prefers-color-scheme: light)').matches
-          ? 'light'
-          : 'dark'
-      setThemeState(resolvedTheme)
-      applyTheme(resolvedTheme)
-    } catch {
-      applyTheme('dark')
-    }
-    setMounted(true)
-  }, [])
-
-  const applyTheme = (newTheme: Theme) => {
-    if (typeof document === 'undefined') return
-    const root = document.documentElement
-    const body = document.body
-
-    if (newTheme === 'dark') {
-      root.classList.add('dark')
-      root.classList.remove('light')
-      root.setAttribute('data-theme', 'dark')
-      root.style.colorScheme = 'dark'
-      if (body) {
-        body.classList.add('dark')
-        body.classList.remove('light')
-        body.setAttribute('data-theme', 'dark')
-      }
-    } else {
-      root.classList.remove('dark')
-      root.classList.add('light')
-      root.setAttribute('data-theme', 'light')
-      root.style.colorScheme = 'light'
-      if (body) {
-        body.classList.remove('dark')
-        body.classList.add('light')
-        body.setAttribute('data-theme', 'light')
-      }
-    }
-  }
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme)
-    applyTheme(newTheme)
-    try {
-      localStorage.setItem('devici-theme', newTheme)
-    } catch (e) {
-      console.warn('Não foi possível persistir tema no localStorage:', e)
-    }
-  }
-
-  const toggleTheme = () => {
-    const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark'
-    setTheme(nextTheme)
-  }
-
+  // `next-themes` previne hydration mismatch injetando um script nativo que roda antes do React.
+  // disableTransitionOnChange garante que não haverá animações piscando na troca durante load.
   return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        isDark: theme === 'dark',
-        toggleTheme,
-        setTheme,
-      }}
+    <NextThemesProvider 
+      attribute="class" 
+      defaultTheme="dark" 
+      enableSystem={false}
+      enableColorScheme
+      disableTransitionOnChange
     >
       {children}
-    </ThemeContext.Provider>
+    </NextThemesProvider>
   )
 }
 
 export function useTheme() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme deve ser usado dentro de um ThemeProvider')
+  const { theme, setTheme, resolvedTheme } = useNextTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const currentTheme = mounted ? (theme === 'system' ? resolvedTheme : theme) : 'dark'
+  const isDark = currentTheme === 'dark'
+
+  const toggleTheme = () => {
+    setTheme(isDark ? 'light' : 'dark')
   }
-  return context
+
+  return {
+    theme: (currentTheme as Theme) || 'dark',
+    isDark,
+    toggleTheme,
+    setTheme: (newTheme: Theme) => setTheme(newTheme),
+  }
 }

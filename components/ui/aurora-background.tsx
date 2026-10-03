@@ -39,7 +39,7 @@ const AuroraBackground: React.FC<AuroraBackgroundProps> = ({
     <div
       role="img"
       aria-label={ariaLabel}
-      className={`relative flex flex-col w-full h-full items-center justify-center bg-black text-slate-50 overflow-hidden ${className}`}
+      className={`relative flex flex-col w-full h-full items-center justify-center bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-50 overflow-hidden ${className}`}
     >
       {/* Background layers (hidden from screen readers) */}
       <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
@@ -111,7 +111,7 @@ const AuroraBackground: React.FC<AuroraBackgroundProps> = ({
         {mounted && Array.from({ length: starCount }).map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-0.5 h-0.5 bg-white rounded-full"
+            className="absolute w-0.5 h-0.5 bg-slate-800 dark:bg-white rounded-full"
             initial={{
               x: `${Math.random() * 100}vw`,
               y: `${Math.random() * 100}vh`,

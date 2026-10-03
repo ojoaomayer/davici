@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Coleção de usuários (perfis/planos)
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      // Criação/edição apenas pelo próprio usuário ou via Admin SDK no backend
+      allow create: if isOwner(userId);
+      // Impede o usuário de alterar campos críticos diretamente pelo client
+      allow update: if isOwner(userId) 
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['plano', 'planilhas_limite', 'role']);
+      allow delete: if false;
+
+      // Subcoleção de orçamentos do usuário
+      match /orcamentos/{orcamentoId} {
+        allow read, write, delete: if isOwner(userId);
+      }
+    }
+
+    // Coleção pública/leitura da base de referência SINAPI / SECID
+    match /tabelas_referencia/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Apenas inserção via script de seed/admin
+    }
+  }
+}

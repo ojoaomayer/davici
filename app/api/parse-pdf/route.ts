@@ -1,16 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { auth } from '@/lib/firebase-admin';
+
+// Rate Limiting
+const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+const RATE_LIMIT_MAX = 20; // limit pdf parses
+const RATE_LIMIT_WINDOW = 60 * 1000;
 
 // Instanciar o cliente Gemini (garanta que a chave esteja no .env)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 export async function POST(req: NextRequest) {
   try {
+    // 1. Autenticação Obrigatória
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const token = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await auth.verifyIdToken(token);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
+
+    // 2. Rate Limiting / Anti-Abuso
+    const now = Date.now();
+    const rateData = rateLimitMap.get(userId) || { count: 0, lastReset: now };
+    if (now - rateData.lastReset > RATE_LIMIT_WINDOW) {
+      rateData.count = 0;
+      rateData.lastReset = now;
+    }
+    if (rateData.count >= RATE_LIMIT_MAX) {
+      return NextResponse.json({ error: 'Rate limit excedido.' }, { status: 429 });
+    }
+    rateData.count++;
+    rateLimitMap.set(userId, rateData);
+
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
 
     if (!file) {
       return NextResponse.json({ error: 'Nenhum arquivo enviado.' }, { status: 400 });
+    }
+
+    // 3. Validação de Tamanho (Max 10 MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'Arquivo muito grande. Máximo permitido: 10 MB.' }, { status: 400 });
+    }
+
+    // 4. Validação de Extensão/Mime-Type
+    if (file.type !== 'application/pdf') {
+      return NextResponse.json({ error: 'Tipo de arquivo não permitido. Apenas PDFs são suportados por esta rota.' }, { status: 400 });
     }
 
     if (!process.env.GEMINI_API_KEY) {

@@ -36,4 +36,6 @@ if (!getApps().length) {
   }
 }
 
+import { getAuth } from 'firebase-admin/auth';
 export const db = getFirestore();
+export const auth = getAuth();

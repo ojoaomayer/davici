@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server'
 import { openai } from '@/lib/openai'
 import { searchSinapiItem } from '@/lib/sinapi-search'
 import { searchSecidItem } from '@/lib/secid-search'
+import { auth, db } from '@/lib/firebase-admin'
+
+// Rate Limiting em memória (por usuário)
+const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
+const RATE_LIMIT_MAX = 50; // max requisições por minuto
+const RATE_LIMIT_WINDOW = 60 * 1000;
 
 // Next.js route segment config — allow up to 5 minutes for large spreadsheets
 export const maxDuration = 300
@@ -153,11 +159,57 @@ Retorne APENAS um JSON válido seguindo a exata estrutura abaixo, sem marcaçõe
 
 export async function POST(request: Request) {
   try {
+    // 1. Autenticação Obrigatória
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const token = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await auth.verifyIdToken(token);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+    }
+    const userId = decodedToken.uid;
+
+    // 2. Rate Limiting / Anti-Abuso
+    const now = Date.now();
+    const rateData = rateLimitMap.get(userId) || { count: 0, lastReset: now };
+    if (now - rateData.lastReset > RATE_LIMIT_WINDOW) {
+      rateData.count = 0;
+      rateData.lastReset = now;
+    }
+    if (rateData.count >= RATE_LIMIT_MAX) {
+      return NextResponse.json({ error: 'Rate limit excedido. Tente novamente em instantes.' }, { status: 429 });
+    }
+    rateData.count++;
+    rateLimitMap.set(userId, rateData);
+
+    // 3. Verificação de Limite de Plano
+    const userDoc = await db.collection('users').doc(userId).get();
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      if ((userData?.planilhas_usadas || 0) >= (userData?.planilhas_limite || 1)) {
+        return NextResponse.json({ error: 'Limite de planilhas excedido para o plano atual.' }, { status: 403 });
+      }
+    }
+
     const { items, filter_uf = 'PR', modoOrcamento = 'execucao' } = await request.json()
 
     if (!items || !Array.isArray(items)) {
       return NextResponse.json({ error: 'Invalid items array' }, { status: 400 })
     }
+
+    // 4. Validação e Sanitização (Anti CSV/Formula Injection)
+    const sanitizedItems = items.map((item: any) => {
+      let desc = typeof item.descricao === 'string' ? item.descricao : String(item.descricao || '');
+      // Escapa formulas maliciosas se a string iniciar com caractere de controle do Excel/CSV
+      if (['=', '+', '-', '@'].includes(desc.charAt(0))) {
+        desc = "'" + desc;
+      }
+      return { ...item, descricao: desc };
+    });
 
     const safeModo: 'execucao' | 'projetos' = modoOrcamento === 'projetos' ? 'projetos' : 'execucao'
     const safeUf = safeModo === 'projetos' ? 'PR' : (filter_uf || 'PR')
@@ -165,9 +217,9 @@ export async function POST(request: Request) {
     const BATCH_SIZE = 10
     const results: any[] = []
 
-    for (let i = 0; i < items.length; i += BATCH_SIZE) {
-      const batch = items.slice(i, i + BATCH_SIZE)
-      console.log(`Processing [${safeModo.toUpperCase()}] items ${i + 1}–${Math.min(i + BATCH_SIZE, items.length)} of ${items.length}...`)
+    for (let i = 0; i < sanitizedItems.length; i += BATCH_SIZE) {
+      const batch = sanitizedItems.slice(i, i + BATCH_SIZE)
+      console.log(`Processing [${safeModo.toUpperCase()}] items ${i + 1}–${Math.min(i + BATCH_SIZE, sanitizedItems.length)} of ${sanitizedItems.length}...`)
       const batchResults = await Promise.all(batch.map((item: any) => processItem(item, safeUf, safeModo)))
       results.push(...batchResults)
     }

@@ -24,13 +24,10 @@ export async function POST(req: NextRequest) {
         );
       }
     } else {
-      // Modo desenvolvimento / sem secret configurado
-      try {
-        event = JSON.parse(body) as Stripe.Event;
-        console.warn('⚠️ Webhook processado sem verificação de assinatura (STRIPE_WEBHOOK_SECRET ausente).');
-      } catch (err: any) {
-        return NextResponse.json({ error: 'Payload JSON inválido.' }, { status: 400 });
-      }
+      return NextResponse.json(
+        { error: 'Webhook signature or secret missing' },
+        { status: 400 }
+      );
     }
 
     console.log(`🔔 Webhook Stripe recebido: ${event.type}`);

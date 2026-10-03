@@ -30,10 +30,18 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (explicit blocks for security)
+.env
+.env.local
+.env.production
+.env.*
 !.env.example
 
+# temporary folders for uploads and downloads
+/tmp
+/temp
+/uploads
+/downloads
 # vercel
 .vercel
 

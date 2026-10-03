@@ -24,12 +24,29 @@ export const metadata: Metadata = {
   title: "DeVici | Orçamentos de Obras com Alta Precisão & SINAPI",
   description:
     "Plataforma de engenharia de custos para orçamentistas e construtoras. Identificação inteligente na base SINAPI, BDI oficial do TCU e conciliação em segundos.",
-  metadataBase: new URL("https://davici.vercel.app"),
+  keywords: [
+    "orçamento de obras",
+    "engenharia de custos",
+    "base SINAPI",
+    "planilha SINAPI",
+    "orçamento inteligente",
+    "software orçamentação",
+    "construção civil",
+    "BDI TCU",
+    "DeVici",
+    "inteligência artificial engenharia"
+  ],
+  authors: [{ name: "DeVici", url: "https://devici.com.br" }],
+  creator: "DeVici",
+  metadataBase: new URL("https://devici.com.br"),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: "DeVici | Orçamentos SINAPI com IA em minutos",
     description:
       "Esqueça o copia-e-cola em planilhas intermináveis. O DeVici identifica composições SINAPI e entrega seu orçamento fechado em minutos.",
-    url: "https://davici.vercel.app",
+    url: "https://devici.com.br",
     siteName: "DeVici",
     locale: "pt_BR",
     type: "website",
@@ -43,6 +60,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
@@ -58,6 +82,31 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        {/* JSON-LD Schema (Structured Data) */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "DeVici",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://devici.com.br",
+              "description": "Plataforma de inteligência artificial para orçamento de obras na construção civil usando a base SINAPI e SECID.",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "BRL"
+              },
+              "creator": {
+                "@type": "Organization",
+                "name": "DeVici",
+                "url": "https://devici.com.br"
+              }
+            })
+          }}
+        />
 
         {/* Preconnect para recursos externos críticos */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
